@@ -92,7 +92,6 @@ interface MenuItem {
   initiallyOpen?: boolean;
 }
 
-// Menu data array - 'active' removed, and 'Chart' submenu href changed to '/'
 const menuItems: MenuItem[] = [
   { name: 'List', href: '#list', icon: HomeIcon },
   { name: 'Chart', href: '#chart', icon: ChartIcon },
@@ -113,19 +112,19 @@ const menuItems: MenuItem[] = [
     submenu: [{ name: 'Daftar Program', href: '#program/list' }],
   },
   { name: 'Reward', href: '#reward', icon: RewardIcon },
-  { name: 'User', href: '#user', icon: UserIcon },
+  { name: 'User', href: '/user', icon: UserIcon },
   {
     name: 'Approval',
     href: '#approval',
     icon: ApprovalIcon,
-    initiallyOpen: true, // This will make the 'Approval' dropdown open by default
+    // initiallyOpen: true,
     submenu: [
-      { name: 'Chart', href: '/' }, // Changed href to '/' for the root path
+      { name: 'Chart', href: '/' },
       { name: 'Invest', href: '/approval/invest' },
     ],
   },
-  { name: 'Notification', href: '#notification', icon: NotificationIcon },
-  { name: 'Activity', href: '#activity', icon: ActivityIcon },
+  { name: 'Notification', href: '/notification', icon: NotificationIcon },
+  { name: 'Activity', href: '/activity', icon: ActivityIcon },
 ];
 
 const Sidebar: React.FC = () => {

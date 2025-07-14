@@ -2,10 +2,10 @@ import React from 'react';
 
 const Navbar: React.FC = () => {
   return (
-    <nav className="bg-white shadow-sm h-16 flex items-center justify-between px-6">
+    <nav className="bg-white shadow-sm h-[80px] flex items-center justify-between px-6">
       {/* Brand/Title */}
       <div className="flex items-center">
-        <h1 className="text-xl font-semibold text-gray-800">RUMAH & CLUB 1001 BINTANG VESSILIA</h1>
+        <span className="text-xl font-semibold text-gray-800">RUMAH & CLUB 1001 BINTANG VESSILIA</span>
       </div>
 
       {/* User Profile/Avatar */}

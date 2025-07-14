@@ -9,8 +9,6 @@ import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMe
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import MainLayout from '@/fragment/MainLayout';
-import { DialogKonfirmasi } from './DialogKonfirmasi';
-
 // --- Tipe data untuk investasi Anda ---
 export type Investment = {
   id: string; // ID Transaksi
@@ -45,41 +43,11 @@ const investmentData: Investment[] = [
   },
 ];
 
-const Invest = () => {
+const Activity = () => {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-
-  // State untuk mengontrol dialog konfirmasi
-  const [isKonfirmasiDialogOpen, setIsKonfirmasiDialogOpen] = React.useState(false);
-  // State untuk menyimpan data baris yang akan dikonfirmasi
-  const [selectedInvestment, setSelectedInvestment] = React.useState<Investment | null>(null);
-
-  // Fungsi yang dipanggil saat tombol "Konfirmasi" di baris tabel diklik
-  const handleKonfirmasiClick = (investment: Investment) => {
-    setSelectedInvestment(investment); // Simpan data investasi yang dipilih
-    setIsKonfirmasiDialogOpen(true); // Buka dialog
-  };
-
-  // Fungsi yang dijalankan saat konfirmasi disetujui di dalam dialog
-  const handleConfirmAction = () => {
-    if (selectedInvestment) {
-      console.log('Konfirmasi investasi:', selectedInvestment.id);
-      // Lakukan logika untuk mengkonfirmasi investasi di sini
-      // Misalnya, kirim permintaan API untuk mengubah status investasi
-      alert(`Investasi dengan ID ${selectedInvestment.id} telah dikonfirmasi!`);
-    }
-    setIsKonfirmasiDialogOpen(false); // Tutup dialog setelah konfirmasi
-    setSelectedInvestment(null); // Reset data yang dipilih
-  };
-
-  // Fungsi yang dijalankan saat konfirmasi dibatalkan di dalam dialog
-  const handleCancelAction = () => {
-    console.log('Konfirmasi dibatalkan.');
-    setIsKonfirmasiDialogOpen(false); // Tutup dialog
-    setSelectedInvestment(null); // Reset data yang dipilih
-  };
 
   // --- Definisi Kolom untuk Tabel Investasi ---
   // Pastikan `columns` berada di dalam komponen `Invest` atau di-memoize jika di luar,
@@ -141,24 +109,6 @@ const Invest = () => {
         return <div className="text-right font-medium">{formatted}</div>;
       },
     },
-    {
-      id: 'actions',
-      enableHiding: false,
-      header: 'Aksi',
-      cell: ({ row }) => {
-        const investment = row.original; // Akses data baris saat ini
-
-        return (
-          <div className="flex gap-x-2 text-sm">
-            <Button className="text-red-600 bg-white border border-red-600 hover:underline">Tolak</Button>
-            {/* Tombol Konfirmasi yang memicu dialog */}
-            <Button className="text-blue-600 hover:underline" onClick={() => handleKonfirmasiClick(investment)}>
-              Konfirmasi
-            </Button>
-          </div>
-        );
-      },
-    },
   ];
 
   const table = useReactTable({
@@ -186,7 +136,7 @@ const Invest = () => {
         <div className="bg-white p-6 rounded-lg shadow-md">
           <div className="bg-white p-4 rounded-lg shadow-md mt-6">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold">List Pengajuan Investasi</h3>
+              <h3 className="text-lg font-semibold">Log Aktivitas</h3>
             </div>
             <div className="flex items-center space-x-4 mb-4">
               <Input placeholder="Cari berdasarkan ID Transaksi..." value={(table.getColumn('id')?.getFilterValue() as string) ?? ''} onChange={(event) => table.getColumn('id')?.setFilterValue(event.target.value)} className="max-w-sm" />
@@ -256,23 +206,8 @@ const Invest = () => {
           </div>
         </div>
       </main>
-
-      {/* Dialog Konfirmasi */}
-      <DialogKonfirmasi
-        isOpen={isKonfirmasiDialogOpen}
-        onOpenChange={setIsKonfirmasiDialogOpen}
-        title="Konfirmasi Investasi"
-        description="Apakah Anda yakin ingin mengkonfirmasi investasi ini?"
-        dataToConfirm={
-          selectedInvestment
-            ? { 'ID Transaksi': selectedInvestment.id, Nominal: new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(selectedInvestment.amount) }
-            : {}
-        }
-        onConfirm={handleConfirmAction}
-        onCancel={handleCancelAction}
-      />
     </MainLayout>
   );
 };
 
-export default Invest;
+export default Activity;

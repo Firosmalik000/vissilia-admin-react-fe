@@ -1,23 +1,21 @@
 'use client';
 
 import { flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable, type ColumnDef, type ColumnFiltersState, type SortingState, type VisibilityState } from '@tanstack/react-table';
-import { ArrowUpDown, ChevronDown } from 'lucide-react';
+import { ArrowUpDown } from 'lucide-react';
 import React from 'react'; // Pastikan React diimpor
 
 import { Button } from '@/components/ui/button';
-import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Input } from '@/components/ui/input';
+
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import MainLayout from '@/fragment/MainLayout';
 import { DialogKonfirmasi } from './DialogKonfirmasi';
 
-// --- Tipe data untuk investasi Anda ---
 export type Investment = {
-  id: string; // ID Transaksi
-  date: string; // Tanggal
-  time: string; // Waktu
-  starCode: string; // Kode Bintang
-  amount: number; // Nominal
+  id: string;
+  date: string;
+  time: string;
+  starCode: string;
+  amount: number;
 };
 
 // --- Data dummy sesuai dengan struktur Investment Anda ---
@@ -186,30 +184,9 @@ const Invest = () => {
         <div className="bg-white p-6 rounded-lg shadow-md">
           <div className="bg-white p-4 rounded-lg shadow-md mt-6">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold">List Pengajuan Investasi</h3>
+              <h3 className="text-lg font-semibold">List Notifikasi</h3>
             </div>
-            <div className="flex items-center space-x-4 mb-4">
-              <Input placeholder="Cari berdasarkan ID Transaksi..." value={(table.getColumn('id')?.getFilterValue() as string) ?? ''} onChange={(event) => table.getColumn('id')?.setFilterValue(event.target.value)} className="max-w-sm" />
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="ml-auto">
-                    Kolom <ChevronDown className="ml-2 h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  {table
-                    .getAllColumns()
-                    .filter((column) => column.getCanHide())
-                    .map((column) => {
-                      return (
-                        <DropdownMenuCheckboxItem key={column.id} className="capitalize" checked={column.getIsVisible()} onCheckedChange={(value) => column.toggleVisibility(!!value)}>
-                          {column.id === 'id' ? 'ID Transaksi' : column.id === 'starCode' ? 'Kode Bintang' : column.id === 'amount' ? 'Nominal' : column.id === 'actions' ? 'Aksi' : column.id}
-                        </DropdownMenuCheckboxItem>
-                      );
-                    })}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+
             <div className="rounded-md border">
               <Table>
                 <TableHeader>
