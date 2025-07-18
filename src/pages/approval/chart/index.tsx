@@ -1,7 +1,7 @@
 import MainLayout from '@/fragment/MainLayout';
 import DataTable from './DataTable';
 
-const Dashboard = () => {
+const Chart = () => {
   return (
     <div>
       <MainLayout>
@@ -134,4 +134,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default Chart;

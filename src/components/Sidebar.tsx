@@ -93,23 +93,27 @@ interface MenuItem {
 }
 
 const menuItems: MenuItem[] = [
-  { name: 'List', href: '#list', icon: HomeIcon },
-  { name: 'Chart', href: '#chart', icon: ChartIcon },
-  { name: 'Invest', href: '#invest', icon: InvestIcon },
+  { name: 'Chart', href: '/', icon: ChartIcon },
+  { name: 'Invest', href: '/invest', icon: InvestIcon },
   {
     name: 'E-commerce',
     href: '#ecommerce',
     icon: ECommerceIcon,
     submenu: [
-      { name: 'Produk', href: '#ecommerce/products' },
-      { name: 'Orders', href: '#ecommerce/orders' },
+      { name: 'Chart', href: '/e-commerce/chart' },
+      { name: 'Produk', href: '/e-commerce/produk' },
+      { name: 'Marketing', href: '/e-commerce/marketing' },
     ],
   },
   {
     name: 'Program',
     href: '#program',
     icon: ProgramIcon,
-    submenu: [{ name: 'Daftar Program', href: '#program/list' }],
+    submenu: [
+      { name: 'Chart', href: '/program/program-chart' },
+      { name: 'Produk', href: '/program/program-produk' },
+      { name: 'Marketing', href: '/program/program-marketing' },
+    ],
   },
   { name: 'Reward', href: '#reward', icon: RewardIcon },
   { name: 'User', href: '/user', icon: UserIcon },
@@ -119,7 +123,7 @@ const menuItems: MenuItem[] = [
     icon: ApprovalIcon,
     // initiallyOpen: true,
     submenu: [
-      { name: 'Chart', href: '/' },
+      { name: 'Chart', href: '/approval/chart' },
       { name: 'Invest', href: '/approval/invest' },
     ],
   },
@@ -172,13 +176,17 @@ const Sidebar: React.FC = () => {
     <div className="w-64 bg-white h-screen shadow-md flex flex-col p-4">
       {/* Logo Section */}
       <div className="flex items-center justify-center mb-6">
-        {/* Replace with your actual logo path, e.g., using import or public folder path */}
         <img src="/logo.png" alt="Company Logo" className="w-36 h-auto" />
       </div>
 
-      {/* Navigation List - Added overflow-y-auto for scrollability if menu items exceed height */}
       <nav className="flex-1 overflow-y-auto">
-        <ul className="space-y-1">
+        <ul className="space-y-1 ">
+          <li className="">
+            <ul className="space-x-3  flex">
+              <HomeIcon />
+              <span>List</span>
+            </ul>
+          </li>
           {menuItems.map((menuItem) => {
             // Determine if the current menu item itself is active
             const isMenuItemActive = menuItem.href === currentPath;

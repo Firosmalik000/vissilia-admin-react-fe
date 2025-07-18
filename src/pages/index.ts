@@ -1,5 +1,13 @@
-export * as Dashboard from './approval/dashboard';
+export * as Dashboard from './chart';
+export * as MainInvest from './invest';
+export * as Chart from './approval/chart';
 export * as Invest from './approval/invest';
 export * as Notification from './notification';
 export * as Activity from './activity';
 export * as User from './user';
+export * as EChart from './e-commerce/e-chart';
+export * as Produk from './e-commerce/produk';
+export * as Marketing from './e-commerce/marketing';
+export * as ProgramChart from './program/program-chart';
+export * as ProgramProduk from './program/program-produk';
+export * as ProgramMarketing from './program/program-marketing';
