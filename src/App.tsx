@@ -1,11 +1,12 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { Activity, Chart, Dashboard, EChart, Invest, MainInvest, Marketing, Notification, Produk, ProgramChart, ProgramMarketing, ProgramProduk, User } from './pages';
+import { Activity, Chart, Dashboard, EChart, Invest, Login, MainInvest, Marketing, Notification, Produk, ProgramChart, ProgramMarketing, ProgramProduk, User } from './pages';
 
 function App() {
   return (
     <>
       <Router>
         <Routes>
+          <Route path="/login" element={<Login.default />} />
           <Route path="/" element={<Dashboard.default />} />
           <Route path="/invest" element={<MainInvest.default />} />
           <Route path="/approval/chart" element={<Chart.default />} />

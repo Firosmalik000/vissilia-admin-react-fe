@@ -6,44 +6,7 @@ import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-export type WithdrawalHistory = {
-  id: string; // ID Transaksi
-  date: string; // Tanggal
-  time: string; // Waktu
-  starCode: string; // Kode Bintang
-  amount: number; // Nominal
-};
-
-const withdrawHistoryData: WithdrawalHistory[] = [
-  {
-    id: 'wdh12345',
-    date: '08/09/2003',
-    time: '23H,21M,34S',
-    starCode: '1KMps',
-    amount: 50000,
-  },
-  {
-    id: 'wdh67890',
-    date: '07/09/2003',
-    time: '10H,00M,00S',
-    starCode: '2KMps',
-    amount: 120000,
-  },
-  {
-    id: 'wdh11223',
-    date: '06/09/2003',
-    time: '15H,45M,00S',
-    starCode: '3KMps',
-    amount: 75000,
-  },
-  {
-    id: 'wdh44556',
-    date: '05/09/2003',
-    time: '09H,10M,20S',
-    starCode: '4KMps',
-    amount: 25000,
-  },
-];
+import type { WithdrawalHistory } from '.';
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const withdrawHistoryColumns: ColumnDef<WithdrawalHistory>[] = [
@@ -104,15 +67,15 @@ export const withdrawHistoryColumns: ColumnDef<WithdrawalHistory>[] = [
     },
   },
 ];
-const DataTable = () => {
+const DataTable = ({ data, label }: { data: WithdrawalHistory[]; label: string }) => {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
-    data: withdrawHistoryData, // Menggunakan data dummy Riwayat Withdraw
-    columns: withdrawHistoryColumns, // Menggunakan kolom untuk Riwayat Withdraw
+    data: data,
+    columns: withdrawHistoryColumns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
@@ -133,7 +96,7 @@ const DataTable = () => {
       {' '}
       <div className="bg-white p-4 rounded-lg shadow-md mt-6">
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-semibold">Riwayat Pendapatan</h3>
+          <h3 className="text-lg font-semibold">{label}</h3>
           <Button variant="link" className="text-blue-600 hover:underline text-sm p-0 h-auto">
             Download Excel
           </Button>

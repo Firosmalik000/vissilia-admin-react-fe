@@ -1,5 +1,44 @@
 import MainLayout from '@/fragment/MainLayout';
 import DataTable from './DataTable';
+import { ChartSection } from './ChartSection';
+export type WithdrawalHistory = {
+  id: string; // ID Transaksi
+  date: string; // Tanggal
+  time: string; // Waktu
+  starCode: string; // Kode Bintang
+  amount: number; // Nominal
+};
+
+const withdrawHistoryData: WithdrawalHistory[] = [
+  {
+    id: 'wdh12345',
+    date: '08/09/2003',
+    time: '23H,21M,34S',
+    starCode: '1KMps',
+    amount: 50000,
+  },
+  {
+    id: 'wdh67890',
+    date: '07/09/2003',
+    time: '10H,00M,00S',
+    starCode: '2KMps',
+    amount: 120000,
+  },
+  {
+    id: 'wdh11223',
+    date: '06/09/2003',
+    time: '15H,45M,00S',
+    starCode: '3KMps',
+    amount: 75000,
+  },
+  {
+    id: 'wdh44556',
+    date: '05/09/2003',
+    time: '09H,10M,20S',
+    starCode: '4KMps',
+    amount: 25000,
+  },
+];
 
 const Invest = () => {
   return (
@@ -34,8 +73,11 @@ const Invest = () => {
                 </div>
               </div>
             </div>
-
-            <DataTable />
+            <div>
+              <ChartSection />
+            </div>
+            <DataTable label={'List Investasi'} data={withdrawHistoryData} />
+            <DataTable label={'List Pengajuan Investasi'} data={withdrawHistoryData} />
           </div>
         </main>
       </MainLayout>

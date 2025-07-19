@@ -72,8 +72,8 @@ const LogoutIcon = () => (
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
   </svg>
 );
-const ChevronRightIcon = () => (
-  <svg className="ml-auto w-4 h-4 transform group-open:rotate-90 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+const ChevronRightIcon = ({ isOpen }: { isOpen: boolean }) => (
+  <svg className={`ml-auto w-4 h-4 transform ${isOpen ? 'rotate-90' : ''} transition-transform duration-200`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
   </svg>
 );
@@ -121,7 +121,7 @@ const menuItems: MenuItem[] = [
     name: 'Approval',
     href: '#approval',
     icon: ApprovalIcon,
-    // initiallyOpen: true,
+    // initiallyOpen: true, // Uncomment to test initial open
     submenu: [
       { name: 'Chart', href: '/approval/chart' },
       { name: 'Invest', href: '/approval/invest' },
@@ -132,13 +132,11 @@ const menuItems: MenuItem[] = [
 ];
 
 const Sidebar: React.FC = () => {
-  // State to hold the current path from the browser's URL
-  // This will be used to determine which menu item is 'active'.
   const [currentPath, setCurrentPath] = useState<string>(window.location.pathname);
+  // State to manage which submenus are currently open
+  const [openSubmenus, setOpenSubmenus] = useState<string[]>([]);
 
-  // useEffect to listen for URL changes (e.g., via browser's back/forward buttons).
-  // In a real application using React Router, you'd use `useLocation().pathname`
-  // and remove this manual event listener.
+  // Effect to update currentPath when browser history changes (e.g., back/forward buttons)
   useEffect(() => {
     const handlePopState = () => {
       setCurrentPath(window.location.pathname);
@@ -151,71 +149,85 @@ const Sidebar: React.FC = () => {
     };
   }, []);
 
-  // Function to handle menu item clicks.
-  // This function simulates navigation by updating the browser's history.
-  // In a real application with React Router, you would typically use `<Link to={href}>`
-  // or `Maps(href)` from `useNavigate` hook.
+  // Effect to initialize open submenus based on `initiallyOpen` or active submenu item
+  useEffect(() => {
+    const initialOpen: string[] = [];
+    menuItems.forEach((item) => {
+      if (item.initiallyOpen) {
+        initialOpen.push(item.name);
+      }
+      // Also open if any of its submenus is the current active path
+      if (item.submenu && item.submenu.some((sub) => sub.href === currentPath)) {
+        if (!initialOpen.includes(item.name)) {
+          initialOpen.push(item.name);
+        }
+      }
+    });
+    setOpenSubmenus(initialOpen);
+  }, [currentPath]); // Re-evaluate when currentPath changes
+
+  // Function to handle navigation
   const handleMenuClick = (href: string) => {
-    // Only push state if the href is different from the current path to avoid redundant history entries
     if (window.location.pathname !== href) {
       window.history.pushState({}, '', href);
     }
     setCurrentPath(href);
   };
 
-  // State to manage which submenus are currently open.
-  // It's initialized to include submenus marked `initiallyOpen` OR any submenu whose child is the current active path.
-  const [openSubmenus, setOpenSubmenus] = useState<string[]>(menuItems.filter((item) => item.initiallyOpen || (item.submenu && item.submenu.some((sub) => sub.href === window.location.pathname))).map((item) => item.name));
-
-  // Function to toggle the open/close state of a submenu
+  // Function to toggle submenu open/close state
   const handleToggleSubmenu = (menuName: string) => {
     setOpenSubmenus((prev) => (prev.includes(menuName) ? prev.filter((name) => name !== menuName) : [...prev, menuName]));
   };
 
   return (
     <div className="w-64 bg-white h-screen shadow-md flex flex-col p-4">
-      {/* Logo Section */}
       <div className="flex items-center justify-center mb-6">
-        <img src="/logo.png" alt="Company Logo" className="w-36 h-auto" />
+        {/* Replace with your actual logo */}
+        <div className="w-36 h-10 bg-gray-200 flex items-center justify-center text-gray-700 font-bold rounded">Your Logo</div>
       </div>
 
       <nav className="flex-1 overflow-y-auto">
-        <ul className="space-y-1 ">
-          <li className="">
-            <ul className="space-x-3  flex">
+        <ul className="space-y-1">
+          {/* Home/List item - Consider making this a proper link if it navigates */}
+          <li>
+            <a
+              href="/" // Assuming / is the home route
+              onClick={(e) => {
+                e.preventDefault();
+                handleMenuClick('/');
+              }}
+              className={`flex items-center p-2 text-sm font-medium rounded-lg
+                ${currentPath === '/' ? 'text-blue-700 bg-blue-100' : 'text-gray-700 hover:bg-gray-100'}`}
+            >
               <HomeIcon />
-              <span>List</span>
-            </ul>
+              Home
+            </a>
           </li>
+          {/* Main menu items */}
           {menuItems.map((menuItem) => {
-            // Determine if the current menu item itself is active
             const isMenuItemActive = menuItem.href === currentPath;
-            // Determine if any of the submenu items are active
             const hasActiveSubmenu = menuItem.submenu?.some((subItem) => subItem.href === currentPath);
+            const isSubmenuOpen = openSubmenus.includes(menuItem.name);
 
             return (
               <li key={menuItem.name} className="relative group">
                 {menuItem.submenu ? (
-                  // Render a dropdown menu item using <details> tag
-                  <details
-                    // The 'open' attribute is controlled by state, and also if any child is active
-                    open={openSubmenus.includes(menuItem.name) || hasActiveSubmenu}
-                    onToggle={() => handleToggleSubmenu(menuItem.name)}
-                    className="group"
-                  >
+                  // Use a div with onClick for summary to control details
+                  // The `open` prop of details is now fully controlled by React state
+                  <details open={isSubmenuOpen} className="group">
                     <summary
                       className={`flex items-center p-2 text-sm font-medium rounded-lg cursor-pointer
-                        ${
-                          isMenuItemActive || hasActiveSubmenu // Apply active styling to summary if main item or any submenu item is active
-                            ? 'text-blue-700 bg-blue-100'
-                            : 'text-gray-700 hover:bg-gray-100'
-                        }
-                        ${openSubmenus.includes(menuItem.name) ? 'bg-gray-100' : ''}
+                        ${isMenuItemActive || hasActiveSubmenu ? 'text-blue-700 bg-blue-100' : 'text-gray-700 hover:bg-gray-100'}
                       `}
+                      onClick={(e) => {
+                        // Prevent default details toggle behavior
+                        e.preventDefault();
+                        handleToggleSubmenu(menuItem.name);
+                      }}
                     >
-                      <menuItem.icon /> {/* Render the icon component */}
+                      <menuItem.icon />
                       {menuItem.name}
-                      <ChevronRightIcon /> {/* Chevron icon for dropdown indicator */}
+                      <ChevronRightIcon isOpen={isSubmenuOpen} />
                     </summary>
                     <ul className="pl-8 mt-1 space-y-1">
                       {menuItem.submenu.map((subItem) => (
@@ -223,15 +235,11 @@ const Sidebar: React.FC = () => {
                           <a
                             href={subItem.href}
                             onClick={(e) => {
-                              e.preventDefault(); // Prevent default link behavior if using history.pushState
+                              e.preventDefault();
                               handleMenuClick(subItem.href);
                             }}
                             className={`flex items-center p-2 text-sm rounded-lg
-                              ${
-                                currentPath === subItem.href // Apply active styling if this specific submenu item is active
-                                  ? 'text-blue-700 bg-blue-100'
-                                  : 'text-gray-600 hover:bg-gray-50'
-                              }`}
+                              ${currentPath === subItem.href ? 'text-blue-700 bg-blue-100' : 'text-gray-600 hover:bg-gray-50'}`}
                           >
                             {subItem.name}
                           </a>
@@ -240,21 +248,16 @@ const Sidebar: React.FC = () => {
                     </ul>
                   </details>
                 ) : (
-                  // Render a regular (non-dropdown) menu item
+                  // Regular menu item without submenu
                   <a
                     href={menuItem.href}
                     onClick={(e) => {
-                      e.preventDefault(); // Prevent default link behavior if using history.pushState
+                      e.preventDefault();
                       handleMenuClick(menuItem.href);
                     }}
                     className={`flex items-center p-2 text-sm font-medium rounded-lg
-                      ${
-                        isMenuItemActive // Apply active styling if this specific menu item is active
-                          ? 'text-blue-700 bg-blue-100'
-                          : 'text-gray-700 hover:bg-gray-100'
-                      }`}
+                      ${isMenuItemActive ? 'text-blue-700 bg-blue-100' : 'text-gray-700 hover:bg-gray-100'}`}
                   >
-                    {/* Blue line indicator for the active item */}
                     {isMenuItemActive && <span className="w-1.5 h-full bg-blue-700 absolute left-0 top-0 rounded-l-lg"></span>}
                     <menuItem.icon />
                     {menuItem.name}

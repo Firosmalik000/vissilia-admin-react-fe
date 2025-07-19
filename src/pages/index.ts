@@ -1,3 +1,4 @@
+export * as Login from './login';
 export * as Dashboard from './chart';
 export * as MainInvest from './invest';
 export * as Chart from './approval/chart';
