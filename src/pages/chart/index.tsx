@@ -1,10 +1,9 @@
-import MainLayout from '@/fragment/MainLayout';
 import DataTable from './DataTable';
 
 const Chart = () => {
   return (
     <div>
-      <MainLayout>
+      <>
         <main className="p-6 flex-1">
           <h2 className="text-2xl font-bold mb-4">Dashboard Overview</h2>
           <div className="bg-white p-6 rounded-lg shadow-md">
@@ -39,7 +38,7 @@ const Chart = () => {
             <DataTable />
           </div>
         </main>
-      </MainLayout>
+      </>
     </div>
   );
 };

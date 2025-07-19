@@ -1,4 +1,3 @@
-import MainLayout from '@/fragment/MainLayout';
 import React, { useState } from 'react';
 
 export interface ProdukItem {
@@ -83,7 +82,7 @@ const Produk: React.FC = () => {
   };
 
   return (
-    <MainLayout>
+    <>
       <main className="p-6 flex-1">
         <div className="bg-white p-6 rounded-lg shadow-md">
           <div className="p-5  min-h-screen font-sans">
@@ -152,7 +151,7 @@ const Produk: React.FC = () => {
           </div>
         </div>
       </main>
-    </MainLayout>
+    </>
   );
 };
 

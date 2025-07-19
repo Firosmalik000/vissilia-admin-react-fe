@@ -1,10 +1,9 @@
-import MainLayout from '@/fragment/MainLayout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import TableUser from './TableUser'; // Pastikan TableUser menerima prop 'role'
 
 const User = () => {
   return (
-    <MainLayout>
+    <>
       <main className="flex-1 p-6">
         <div className="rounded-lg bg-white p-6 shadow-md">
           <div className="w-full">
@@ -29,7 +28,7 @@ const User = () => {
           </div>
         </div>
       </main>
-    </MainLayout>
+    </>
   );
 };
 

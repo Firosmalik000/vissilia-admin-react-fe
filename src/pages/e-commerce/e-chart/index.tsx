@@ -1,10 +1,10 @@
-import MainLayout from '@/fragment/MainLayout';
 import DataTable from './DataTable';
+import { ChartSection } from './ChartSection';
 
 const EChart = () => {
   return (
     <div>
-      <MainLayout>
+      <>
         <main className="p-6 flex-1">
           <div className="bg-white p-6 rounded-lg shadow-md">
             {/* Top row with cards */}
@@ -45,32 +45,7 @@ const EChart = () => {
             {/* Charts and Lists */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Left Chart Area */}
-              <div className="bg-white p-4 rounded-lg shadow-md">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-semibold">Withdrawal Overview</h3>
-                  <select className="border border-gray-300 rounded-md p-1 text-sm">
-                    <option>Tahun 2025</option>
-                  </select>
-                </div>
-                {/* Placeholder for chart */}
-                <div className="h-48 bg-gray-100 flex items-center justify-center text-gray-500">
-                  <p>Chart Goes Here</p>
-                </div>
-                <div className="flex justify-between text-sm text-gray-600 mt-2">
-                  <span>Jan</span>
-                  <span>Feb</span>
-                  <span>Mar</span>
-                  <span>Apr</span>
-                  <span>Mei</span>
-                  <span>Jun</span>
-                  <span>Jul</span>
-                  <span>Agu</span>
-                  <span>Sep</span>
-                  <span>Okt</span>
-                  <span>Nov</span>
-                  <span>Des</span>
-                </div>
-              </div>
+              <ChartSection />
 
               {/* Right List Pengajuan Withdraw (Not changed in this iteration) */}
               <div className="bg-white p-4 rounded-lg shadow-md">
@@ -135,7 +110,7 @@ const EChart = () => {
             <DataTable />
           </div>
         </main>
-      </MainLayout>
+      </>
     </div>
   );
 };

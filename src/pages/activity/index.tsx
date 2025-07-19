@@ -1,5 +1,3 @@
-'use client';
-
 import { flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable, type ColumnDef, type ColumnFiltersState, type SortingState, type VisibilityState } from '@tanstack/react-table';
 import { ArrowUpDown, ChevronDown } from 'lucide-react';
 import React from 'react'; // Pastikan React diimpor
@@ -8,8 +6,6 @@ import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import MainLayout from '@/fragment/MainLayout';
-// --- Tipe data untuk investasi Anda ---
 export type Investment = {
   id: string; // ID Transaksi
   date: string; // Tanggal
@@ -131,7 +127,7 @@ const Activity = () => {
   });
 
   return (
-    <MainLayout>
+    <>
       <main className="p-6 flex-1">
         <div className="bg-white p-6 rounded-lg shadow-md">
           <div className="bg-white p-4 rounded-lg shadow-md mt-6">
@@ -206,7 +202,7 @@ const Activity = () => {
           </div>
         </div>
       </main>
-    </MainLayout>
+    </>
   );
 };
 

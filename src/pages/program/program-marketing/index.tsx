@@ -1,4 +1,3 @@
-import MainLayout from '@/fragment/MainLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 
@@ -84,7 +83,7 @@ const offers = [
 
 const ProgramMarketing = () => {
   return (
-    <MainLayout>
+    <>
       <main className="p-6 md:p-8 lg:p-10 flex-1 bg-gray-50 min-h-screen">
         <div className="bg-white p-6 md:p-8 rounded-xl shadow-lg border border-gray-200">
           <CarouselDemo />
@@ -104,7 +103,7 @@ const ProgramMarketing = () => {
           </div>
         </section>
       </main>
-    </MainLayout>
+    </>
   );
 };
 

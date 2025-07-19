@@ -1,18 +1,16 @@
-import React, { type ReactNode } from 'react';
+import { Outlet } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Sidebar from '@/components/Sidebar';
 
-interface MainLayoutProps {
-  children: ReactNode;
-}
-
-const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
+const MainLayout = () => {
   return (
     <div className="flex min-h-screen bg-gray-100">
       <Sidebar />
       <div className="flex-1 flex flex-col">
         <Navbar />
-        {children}
+        <main className="flex-1 p-4">
+          <Outlet />
+        </main>
       </div>
     </div>
   );

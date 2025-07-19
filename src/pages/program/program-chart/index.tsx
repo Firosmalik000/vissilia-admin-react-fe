@@ -1,10 +1,9 @@
-import MainLayout from '@/fragment/MainLayout';
 import DataTable from './DataTable';
 
 const ProgramChart = () => {
   return (
     <div>
-      <MainLayout>
+      <>
         <main className="p-6 flex-1">
           <div className="bg-white p-6 rounded-lg shadow-md">
             {/* Top row with cards */}
@@ -135,7 +134,7 @@ const ProgramChart = () => {
             <DataTable />
           </div>
         </main>
-      </MainLayout>
+      </>
     </div>
   );
 };

@@ -1,4 +1,3 @@
-import MainLayout from '@/fragment/MainLayout';
 import DataTable from './DataTable';
 import { ChartSection } from './ChartSection';
 export type WithdrawalHistory = {
@@ -43,7 +42,7 @@ const withdrawHistoryData: WithdrawalHistory[] = [
 const Invest = () => {
   return (
     <div>
-      <MainLayout>
+      <>
         <main className="p-6 flex-1">
           <div className="bg-white p-6 rounded-lg shadow-md">
             {/* Top row with cards */}
@@ -80,7 +79,7 @@ const Invest = () => {
             <DataTable label={'List Pengajuan Investasi'} data={withdrawHistoryData} />
           </div>
         </main>
-      </MainLayout>
+      </>
     </div>
   );
 };

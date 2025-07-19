@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom'; // Import Link and useLocation
 
-// Icon components - These remain unchanged as they are simple SVG placeholders.
-// In a real application, you'd likely use an icon library (e.g., Heroicons, React Icons).
+// Icon components (no changes)
 const HomeIcon = () => (
   <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m0 0l7 7 7-7m-2 2V10a1 1 0 00-1-1h-3m-6 0a1 1 0 00-1 1v10a1 1 0 001 1h3m-6-10v10a1 1 0 001 1h3"></path>
@@ -132,22 +132,11 @@ const menuItems: MenuItem[] = [
 ];
 
 const Sidebar: React.FC = () => {
-  const [currentPath, setCurrentPath] = useState<string>(window.location.pathname);
+  const location = useLocation(); // Use useLocation hook to get current path
+  const currentPath = location.pathname;
+
   // State to manage which submenus are currently open
   const [openSubmenus, setOpenSubmenus] = useState<string[]>([]);
-
-  // Effect to update currentPath when browser history changes (e.g., back/forward buttons)
-  useEffect(() => {
-    const handlePopState = () => {
-      setCurrentPath(window.location.pathname);
-    };
-
-    window.addEventListener('popstate', handlePopState);
-
-    return () => {
-      window.removeEventListener('popstate', handlePopState);
-    };
-  }, []);
 
   // Effect to initialize open submenus based on `initiallyOpen` or active submenu item
   useEffect(() => {
@@ -166,14 +155,6 @@ const Sidebar: React.FC = () => {
     setOpenSubmenus(initialOpen);
   }, [currentPath]); // Re-evaluate when currentPath changes
 
-  // Function to handle navigation
-  const handleMenuClick = (href: string) => {
-    if (window.location.pathname !== href) {
-      window.history.pushState({}, '', href);
-    }
-    setCurrentPath(href);
-  };
-
   // Function to toggle submenu open/close state
   const handleToggleSubmenu = (menuName: string) => {
     setOpenSubmenus((prev) => (prev.includes(menuName) ? prev.filter((name) => name !== menuName) : [...prev, menuName]));
@@ -188,20 +169,16 @@ const Sidebar: React.FC = () => {
 
       <nav className="flex-1 overflow-y-auto">
         <ul className="space-y-1">
-          {/* Home/List item - Consider making this a proper link if it navigates */}
+          {/* Home/List item */}
           <li>
-            <a
-              href="/" // Assuming / is the home route
-              onClick={(e) => {
-                e.preventDefault();
-                handleMenuClick('/');
-              }}
+            <Link // Use Link component for navigation
+              to="/"
               className={`flex items-center p-2 text-sm font-medium rounded-lg
                 ${currentPath === '/' ? 'text-blue-700 bg-blue-100' : 'text-gray-700 hover:bg-gray-100'}`}
             >
               <HomeIcon />
               Home
-            </a>
+            </Link>
           </li>
           {/* Main menu items */}
           {menuItems.map((menuItem) => {
@@ -212,16 +189,13 @@ const Sidebar: React.FC = () => {
             return (
               <li key={menuItem.name} className="relative group">
                 {menuItem.submenu ? (
-                  // Use a div with onClick for summary to control details
-                  // The `open` prop of details is now fully controlled by React state
                   <details open={isSubmenuOpen} className="group">
                     <summary
                       className={`flex items-center p-2 text-sm font-medium rounded-lg cursor-pointer
                         ${isMenuItemActive || hasActiveSubmenu ? 'text-blue-700 bg-blue-100' : 'text-gray-700 hover:bg-gray-100'}
                       `}
                       onClick={(e) => {
-                        // Prevent default details toggle behavior
-                        e.preventDefault();
+                        e.preventDefault(); // Prevent default details toggle behavior
                         handleToggleSubmenu(menuItem.name);
                       }}
                     >
@@ -232,36 +206,28 @@ const Sidebar: React.FC = () => {
                     <ul className="pl-8 mt-1 space-y-1">
                       {menuItem.submenu.map((subItem) => (
                         <li key={subItem.name}>
-                          <a
-                            href={subItem.href}
-                            onClick={(e) => {
-                              e.preventDefault();
-                              handleMenuClick(subItem.href);
-                            }}
+                          <Link // Use Link component for submenu navigation
+                            to={subItem.href}
                             className={`flex items-center p-2 text-sm rounded-lg
                               ${currentPath === subItem.href ? 'text-blue-700 bg-blue-100' : 'text-gray-600 hover:bg-gray-50'}`}
                           >
                             {subItem.name}
-                          </a>
+                          </Link>
                         </li>
                       ))}
                     </ul>
                   </details>
                 ) : (
                   // Regular menu item without submenu
-                  <a
-                    href={menuItem.href}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleMenuClick(menuItem.href);
-                    }}
+                  <Link // Use Link component for regular menu items
+                    to={menuItem.href}
                     className={`flex items-center p-2 text-sm font-medium rounded-lg
                       ${isMenuItemActive ? 'text-blue-700 bg-blue-100' : 'text-gray-700 hover:bg-gray-100'}`}
                   >
                     {isMenuItemActive && <span className="w-1.5 h-full bg-blue-700 absolute left-0 top-0 rounded-l-lg"></span>}
                     <menuItem.icon />
                     {menuItem.name}
-                  </a>
+                  </Link>
                 )}
               </li>
             );

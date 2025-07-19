@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import MainLayout from '@/fragment/MainLayout';
 import { DialogKonfirmasi } from './DialogKonfirmasi';
 
 // --- Tipe data untuk investasi Anda ---
@@ -181,7 +180,7 @@ const Invest = () => {
   });
 
   return (
-    <MainLayout>
+    <>
       <main className="p-6 flex-1">
         <div className="bg-white p-6 rounded-lg shadow-md">
           <div className="bg-white p-4 rounded-lg shadow-md mt-6">
@@ -271,7 +270,7 @@ const Invest = () => {
         onConfirm={handleConfirmAction}
         onCancel={handleCancelAction}
       />
-    </MainLayout>
+    </>
   );
 };
 
