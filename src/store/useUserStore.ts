@@ -20,11 +20,13 @@ export const useUserStore = create<UserState>((set, get) => ({
             token,
         })),
 
-    clearUserData: () =>
+    clearUserData: () => {
+        localStorage.removeItem('token')
         set(() => ({
             user: null,
             token: '',
-        })),
+        }))
+    },
 
     fetchUserData: async () => {
         try {
