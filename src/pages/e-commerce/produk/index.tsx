@@ -1,20 +1,29 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from 'react';
+import { ProductFormDialog } from './ProductFormDialog';
 
 export interface ProdukItem {
   id: string;
   image: string;
   name: string;
   price: number;
-  stock: string; // Bisa juga number, tergantung kebutuhan
-  sold: string; // Bisa juga number, tergantung kebutuhan
-  additionalInfo?: string; // Untuk angka 168/10 di bawah harga
+  stock: string;
+  sold: string;
+  additionalInfo?: string;
 }
+export type Investment = {
+  id: string;
+  date: string;
+  time: string;
+  starCode: string;
+  amount: number;
+};
 
 // --- Data Dummy ---
 const dummyProdukData: ProdukItem[] = [
   {
     id: 'prod-001',
-    image: 'https://via.placeholder.com/150/ADD8E6/FFFFFF?text=Produk+1', // Ganti dengan URL gambar Anda
+    image: 'https://via.placeholder.com/150/ADD8E6/FFFFFF?text=Produk+1',
     name: 'Cicanic Soothing Cream SNP prop 200ml',
     price: 30000,
     stock: '10k+',
@@ -23,14 +32,13 @@ const dummyProdukData: ProdukItem[] = [
   },
   {
     id: 'prod-002',
-    image: 'https://via.placeholder.com/150/FFC0CB/FFFFFF?text=Produk+2', // Ganti dengan URL gambar Anda
+    image: 'https://via.placeholder.com/150/FFC0CB/FFFFFF?text=Produk+2',
     name: 'Cicanic Soothing Cream SNP prop 200ml',
     price: 80000,
     stock: '5k+',
     sold: 'terjual',
     additionalInfo: '10',
   },
-  // Tambahkan lebih banyak data dummy jika diperlukan
 ];
 
 const dummyKategoriData: string[] = ['Semua', 'Fresh Food', 'Snack', 'Beverages', 'Meat'];
@@ -44,16 +52,16 @@ const formatRupiah = (amount: number): string => {
   }).format(amount);
 };
 
-// --- Komponen Produk ---
 const Produk: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('Semua');
   const [produkList, setProdukList] = useState<ProdukItem[]>(dummyProdukData);
+  const [isOpen, setIsOpen] = React.useState(false);
 
-  // Filter produk berdasarkan kategori yang dipilih
   const filteredProduk =
     selectedCategory === 'Semua'
       ? produkList
-      : produkList.filter((produk) => {
+      : // : produkList.filter((produk) => {
+        produkList.filter(() => {
           // Logika filter kategori yang lebih kompleks mungkin diperlukan di sini,
           // misalnya jika setiap produk memiliki properti kategori.
           // Untuk contoh ini, kita hanya menampilkan semua jika "Semua" dipilih.
@@ -73,12 +81,6 @@ const Produk: React.FC = () => {
     if (window.confirm(`Apakah Anda yakin ingin menghapus produk dengan ID: ${id}?`)) {
       setProdukList((prevList) => prevList.filter((produk) => produk.id !== id));
     }
-  };
-
-  const handleAddProduk = () => {
-    console.log('Tambah produk baru');
-    alert('Fungsi Tambah Produk Baru');
-    // Implementasi logika tambah produk di sini (misal: buka modal tambah)
   };
 
   return (
@@ -143,7 +145,7 @@ const Produk: React.FC = () => {
               ))}
 
               {/* Add Product Card */}
-              <div className="bg-gray-200 border-2 border-dashed border-gray-400 rounded-xl flex flex-col justify-center items-center cursor-pointer p-5 transition-colors duration-200 hover:bg-gray-300" onClick={handleAddProduk}>
+              <div className="bg-gray-200 border-2 border-dashed border-gray-400 rounded-xl flex flex-col justify-center items-center cursor-pointer p-5 transition-colors duration-200 hover:bg-gray-300" onClick={() => setIsOpen(true)}>
                 <span className="text-gray-500 text-7xl font-light">+</span>
                 <p className="text-gray-600 text-lg font-medium">Tambah Produk Baru</p>
               </div>
@@ -151,6 +153,7 @@ const Produk: React.FC = () => {
           </div>
         </div>
       </main>
+      <ProductFormDialog isOpen={isOpen} onOpenChange={setIsOpen} title="Konfirmasi Investasi" />
     </>
   );
 };

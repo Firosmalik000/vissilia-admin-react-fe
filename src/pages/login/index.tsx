@@ -1,22 +1,75 @@
+import { useEffect, useRef, useState } from 'react';
+import FingerprintJS from '@fingerprintjs/fingerprintjs';
+import api from '@/service/api';
+import { useNavigate } from 'react-router-dom';
 const Login = () => {
+  const formRef = useRef<HTMLFormElement>(null);
+  const [visitorId, setVisitorId] = useState<string | null>(null);
+  const navigate = useNavigate();
+  useEffect(() => {
+    const getFingerprint = async () => {
+      // Load FingerprintJS agent
+      const fp = await FingerprintJS.load();
+
+      // Get the visitor identifier
+      const result = await fp.get();
+
+      // Save the visitorId
+      setVisitorId(result.visitorId);
+      console.log('Visitor ID:', result.visitorId);
+    };
+
+    getFingerprint();
+  }, []);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const form = formRef.current;
+    if (!form) return;
+    const formData = new FormData(form);
+    const formObject = Object.fromEntries(formData.entries());
+    formObject.device_id = visitorId ?? '';
+    try {
+      const res = await api.post('/auth/login', formObject);
+
+      const token = res.data.token;
+      localStorage.setItem('token', token);
+
+      navigate('/');
+      console.log(formObject);
+    } catch (err) {
+      console.log(err);
+    }
+  };
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-400 p-4">
       <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-md transform transition-all duration-300 hover:shadow-3xl">
         <h2 className="text-3xl font-bold text-center mb-6 text-gray-800">Selamat Datang!</h2>
         <p className="text-center text-gray-600 mb-8">Silakan masuk ke akun Anda</p>
 
-        <form>
+        <form ref={formRef} onSubmit={handleSubmit}>
           <div className="mb-5">
             <label htmlFor="email" className="block text-gray-700 text-sm font-semibold mb-2">
               Email
             </label>
-            <input type="email" id="email" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200" placeholder="nama@email.com" />
+            <input
+              type="email"
+              name="identifier"
+              id="email"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
+              placeholder="nama@email.com"
+            />
           </div>
           <div className="mb-6">
             <label htmlFor="password" className="block text-gray-700 text-sm font-semibold mb-2">
               Password
             </label>
-            <input type="password" id="password" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200" placeholder="********" />
+            <input
+              type="password"
+              name="password"
+              id="password"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
+              placeholder="********"
+            />
           </div>
           <div className="flex items-center justify-between mb-6">
             <label className="flex items-center text-sm text-gray-600">
