@@ -60,3 +60,14 @@ export interface ProductApiResponse {
     pagination: Pagination
     message: string
 }
+
+export interface Category {
+    id: number
+    name: string
+    is_release: number
+}
+
+export interface CategoryResponse {
+    data: Category[]
+    message: string
+}

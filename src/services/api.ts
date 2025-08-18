@@ -1,4 +1,4 @@
-import type { LoginPayload, LoginResponse, ProductApiResponse, User } from './inteface'
+import type { CategoryResponse, LoginPayload, LoginResponse, ProductApiResponse, User } from './inteface'
 import api from './interceptor'
 
 const API_URL: string = import.meta.env.VITE_API_URL as string
@@ -21,5 +21,10 @@ export const getProduct = async (page: number = 1, perPage: number = 10, categor
     const response = await api.get<ProductApiResponse>(`${API_URL}/admin/products`, {
         params,
     })
+    return response.data
+}
+
+export const getCategoryActive = async (): Promise<CategoryResponse> => {
+    const response = await api.get<CategoryResponse>(`${API_URL}/admin/categories/active`)
     return response.data
 }
