@@ -1,3 +1,4 @@
+import { productUrl } from '@/pages/utils/imageUrl'
 import { getCategoryActive, getProduct } from '@/services/api'
 import { type Category, type Product } from '@/services/inteface'
 import React, { useEffect, useState } from 'react'
@@ -140,7 +141,7 @@ const ProgramProduk: React.FC = () => {
                             <div className="space-y-4">
                                 {produkList.map((produk) => (
                                     <div key={produk.id} className="bg-white rounded-xl shadow-md p-4 flex gap-4 items-center hover:shadow-lg transition">
-                                        <img src={produk.image} alt={produk.name} className="w-24 h-24 object-cover rounded-lg shadow-sm" />
+                                        <img src={productUrl(produk.image)} alt={produk.name} className="w-24 h-24 object-cover rounded-lg shadow-sm" />
                                         <div className="flex-1">
                                             <h3 className="font-semibold text-lg text-gray-800">{produk.name}</h3>
                                             <p className="text-gray-600 text-sm">Terjual: {produk.total_sold}</p>
