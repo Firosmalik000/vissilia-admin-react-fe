@@ -11,6 +11,13 @@ const formatRupiah = (amount: number): string => {
         minimumFractionDigits: 0,
     }).format(amount)
 }
+export type Investment = {
+  id: string;
+  date: string;
+  time: string;
+  starCode: string;
+  amount: number;
+};
 
 const ProgramProduk: React.FC = () => {
     const [selectedCategory, setSelectedCategory] = useState<string>('Semua')
