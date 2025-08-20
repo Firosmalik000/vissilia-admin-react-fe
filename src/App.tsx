@@ -5,6 +5,7 @@ import MainLayout from './fragment/MainLayout'
 import { setNavigator } from './utils/navigate'
 import ProtectedRoute from './route/protectedRoute'
 import PublicRoute from './route/publicRoute'
+import OrdersPage from './pages/e-commerce/orders'
 
 function AppContent() {
     const navigate = useNavigate()
@@ -29,6 +30,7 @@ function AppContent() {
                     <Route path="approval/invest" element={<Invest.default />} />
                     <Route path="e-commerce/chart" element={<EChart.default />} />
                     <Route path="e-commerce/produk" element={<Produk.default />} />
+                    <Route path="e-commerce/orders" element={<OrdersPage />} />
                     <Route path="e-commerce/marketing" element={<Marketing.default />} />
                     <Route path="program/program-chart" element={<ProgramChart.default />} />
                     <Route path="program/program-produk" element={<ProgramProduk.default />} />
