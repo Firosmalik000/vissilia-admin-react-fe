@@ -11,17 +11,19 @@ interface ProductFormDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   title: string;
+  payload: any;
 }
 interface ImageFile extends File {
   id: string;
 }
 
-export function ProductFormDialog({ isOpen, onOpenChange, title }: ProductFormDialogProps) {
+export function ProductFormDialog({ isOpen, onOpenChange, title, payload }: ProductFormDialogProps) {
   const [shippingMethod, setShippingMethod] = useState('');
   const [images, setImages] = useState<File[]>([]);
   const [inputs, setInputs] = useState([0]);
-  const formRef = useRef<HTMLFormElement>(null);
+  console.log({ payload });
 
+  const formRef = useRef<HTMLFormElement>(null);
   const handleSubmit = (e: any) => {
     e.preventDefault();
     const formData = new FormData(formRef.current!);
@@ -77,7 +79,7 @@ export function ProductFormDialog({ isOpen, onOpenChange, title }: ProductFormDi
                 <Label htmlFor="name" className="text-left font-semibold text-gray-700">
                   Nama Produk <span className="text-red-500">*</span>
                 </Label>
-                <Input id="name" name="name" placeholder="Cth: Chitato" className="rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500" />
+                <Input id="name" name="name" placeholder="Cth: Chitato" defaultValue={payload?.name ?? '-'} className="rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500" />
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -88,7 +90,7 @@ export function ProductFormDialog({ isOpen, onOpenChange, title }: ProductFormDi
                 </Label>
                 <div className="flex items-center">
                   <span className="bg-gray-100 text-gray-700 px-3 py-2 border border-gray-300 rounded-l-md text-sm">Rp</span>
-                  <Input id="price" name="price" type="number" placeholder="90000" className="rounded-r-md border-gray-300 focus:border-blue-500 focus:ring-blue-500" />
+                  <Input id="price" name="price" type="number" placeholder="90000" className="rounded-r-md border-gray-300 focus:border-blue-500 focus:ring-blue-500" defaultValue={payload?.price ?? '-'} />
                 </div>
               </div>
               {/* stok */}
@@ -108,7 +110,7 @@ export function ProductFormDialog({ isOpen, onOpenChange, title }: ProductFormDi
                   Berat <span className="text-red-500">*</span>
                 </Label>
                 <div className="flex items-center">
-                  <Input id="weight" name="weight" type="number" className="rounded-l-md border-gray-300 focus:border-blue-500 focus:ring-blue-500" />
+                  <Input id="weight" name="weight" type="number" className="rounded-l-md border-gray-300 focus:border-blue-500 focus:ring-blue-500" defaultValue={payload?.weight ?? '-'} />
                   <span className="bg-gray-100 text-gray-700 px-3 py-2 border border-gray-300 rounded-r-md text-sm">g</span>
                 </div>
               </div>
