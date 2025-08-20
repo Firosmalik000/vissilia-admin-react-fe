@@ -128,6 +128,7 @@ const menuItems: MenuItem[] = [
         submenu: [
             { name: 'Chart', href: '/e-commerce/chart' },
             { name: 'Produk', href: '/e-commerce/produk' },
+            { name: 'Order', href: '/e-commerce/orders' },
             { name: 'Marketing', href: '/e-commerce/marketing' },
         ],
     },

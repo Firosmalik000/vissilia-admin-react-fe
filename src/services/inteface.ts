@@ -13,6 +13,10 @@ export interface LoginResponse {
     }
 }
 
+export interface ResponseSuccess {
+    message: string
+}
+
 export interface User {
     id: number
     name: string
@@ -70,4 +74,60 @@ export interface Category {
 export interface CategoryResponse {
     data: Category[]
     message: string
+}
+
+export interface OrderResponse {
+    data: Order[]
+    pagination: Pagination
+}
+
+export interface Order {
+    id: number
+    order_id: string
+    user_id: number
+    type: string
+    total_price: number
+    discount_amount: number
+    final_amount: number
+    total_cashback: number
+    currency: string
+    status: string
+    progress: string
+    is_kado_cinta: number
+    shipping_cost: number
+    expired_at: string | null
+    created_at: string
+    updated_at: string
+    details: OrderDetail[]
+    payment: Payment
+    shipment: Shipment
+}
+
+export interface OrderDetail {
+    id: number
+    order_id: number
+    product_name: string
+    quantity: number
+    final_price: number
+}
+
+export interface Payment {
+    id: number
+    order_id: number
+    payment_method: string
+    amount: number
+    status: string
+    paid_at: string | null
+}
+
+export interface Shipment {
+    id: number
+    order_id: number
+    courier: string
+    shipping_status: string
+    recipient_name: string
+    recipient_address: string
+    recipient_city: string
+    recipient_province: string
+    recipient_postcode: string
 }
