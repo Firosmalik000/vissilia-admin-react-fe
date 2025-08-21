@@ -15,6 +15,25 @@ const formatRupiah = (amount: number): string => {
     }).format(amount)
 }
 
+const handleStatusOrder = (status: string, shipment: string) => {
+    if (status === 'paid') {
+        switch (shipment) {
+            case 'pending':
+                return 'Waiting For Shipment'
+            case 'shipped':
+                return 'Shipped'
+            case 'delivered':
+                return 'Delivered'
+            default:
+                break
+        }
+    } else if (status === 'pending') {
+        return 'Waiting For Payment'
+    } else {
+        return 'Canceled'
+    }
+}
+
 const OrdersPage: React.FC = () => {
     const [selectedCategory, setSelectedCategory] = useState<string>('Semua')
     const [orders, setOrders] = useState<Order[]>([])
@@ -83,11 +102,21 @@ const OrdersPage: React.FC = () => {
                                             </Button>
                                         </SelectTrigger>
                                         <SelectContent className="mt-2">
-                                            <SelectItem value="Semua">Semua</SelectItem>
-                                            <SelectItem value="Baru">Baru</SelectItem>
-                                            <SelectItem value="Diproses">Diproses</SelectItem>
-                                            <SelectItem value="Selesai">Selesai</SelectItem>
-                                            <SelectItem value="Dibatalkan">Dibatalkan</SelectItem>
+                                            <SelectItem className="hover:bg-gray-200" value="Semua">
+                                                Semua
+                                            </SelectItem>
+                                            <SelectItem className="hover:bg-gray-200" value="Baru">
+                                                Baru
+                                            </SelectItem>
+                                            <SelectItem className="hover:bg-gray-200" value="Diproses">
+                                                Diproses
+                                            </SelectItem>
+                                            <SelectItem className="hover:bg-gray-200" value="Selesai">
+                                                Selesai
+                                            </SelectItem>
+                                            <SelectItem className="hover:bg-gray-200" value="Dibatalkan">
+                                                Dibatalkan
+                                            </SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
@@ -138,11 +167,16 @@ const OrdersPage: React.FC = () => {
                                         {/* <img src={productUrl(order.)} alt={order.name} className="w-24 h-24 object-cover rounded-lg shadow-sm" /> */}
                                         <div className="flex-1">
                                             <h3 className="font-semibold text-lg text-gray-800">{order.order_id}</h3>
-                                            <p className="text-gray-600 text-sm">Status: {order.status}</p>
+                                            <p className="text-gray-600 text-sm">Status: {handleStatusOrder(order.status, order.payment.status)}</p>
                                             <div className="mt-2 flex gap-3">
                                                 <span className="font-bold text-blue-600 text-lg">{formatRupiah(order.final_amount)}</span>
                                                 {order.total_price !== order.final_amount && <span className="text-gray-500 line-through">{formatRupiah(order.total_price)}</span>}
                                             </div>
+                                        </div>
+                                        <div className="mt-2 flex flex-col items-end">
+                                            {order.total_price !== order.final_amount && <span className="text-gray-500 line-through">{formatRupiah(order.total_price)}</span>}
+                                            <br />
+                                            <span className="font-bold text-blue-600 text-lg">{formatRupiah(order.final_amount)}</span>
                                         </div>
                                     </div>
                                 ))}
