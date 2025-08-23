@@ -1,23 +1,27 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import type { Order } from '@/services/inteface'
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 
-interface OrderDetailDialogProps {
+interface ModalPengirimanProps {
     isOpen: boolean
     onOpenChange: (open: boolean) => void
     order: Order | null
-    onSubmit: (orderId: number) => void
+    onSubmitResi: (orderId: number, resi: string) => void
 }
 
-export function OrderDetailDialog({ isOpen, onOpenChange, order, onSubmit }: OrderDetailDialogProps) {
+export function ModalPengiriman({ isOpen, onOpenChange, order, onSubmitResi }: ModalPengirimanProps) {
+    const [resi, setResi] = useState('')
     const formRef = useRef<HTMLFormElement>(null)
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
         if (order) {
-            onSubmit(order.id)
+            onSubmitResi(order.id, resi)
+            setResi('')
             onOpenChange(false)
         }
     }
@@ -31,9 +35,7 @@ export function OrderDetailDialog({ isOpen, onOpenChange, order, onSubmit }: Ord
                     <DialogHeader>
                         <DialogTitle className="text-xl font-bold">Detail Order #{order.order_id}</DialogTitle>
                         <DialogDescription>
-                            Status Pembayaran: <span className="font-semibold capitalize">{order.payment.status}</span>
-                            <br />
-                            Status Pengiriman: <span className="font-semibold capitalize">{order.shipment.shipping_status}</span>
+                            Status: <span className="font-semibold capitalize">{order.status}</span>
                         </DialogDescription>
                     </DialogHeader>
 
@@ -83,6 +85,12 @@ export function OrderDetailDialog({ isOpen, onOpenChange, order, onSubmit }: Ord
                                 {order.shipment.recipient_city}, {order.shipment.recipient_province} {order.shipment.recipient_postcode}
                             </p>
                         </div>
+
+                        {/* Input Resi */}
+                        <div className="flex flex-col gap-2">
+                            <Label htmlFor="resi">Nomor Resi</Label>
+                            <Input id="resi" value={resi} onChange={(e) => setResi(e.target.value)} placeholder="Masukkan nomor resi" required />
+                        </div>
                     </div>
 
                     <DialogFooter className="flex justify-end gap-3">
@@ -91,11 +99,9 @@ export function OrderDetailDialog({ isOpen, onOpenChange, order, onSubmit }: Ord
                                 Tutup
                             </Button>
                         </DialogClose>
-                        {order.shipment.shipping_status !== 'delivered' && (
-                            <Button type="submit" className="rounded-md px-6 py-2 bg-yellow-500! text-white hover:bg-yellow-600! hover:border-yellow-600!">
-                                Mark as Delivered
-                            </Button>
-                        )}
+                        <Button type="submit" className="rounded-md px-6 py-2 bg-blue-600 text-gray-700 border-transparent! hover:border-blue-700! hover:text-blue-700">
+                            Simpan Pengiriman
+                        </Button>
                     </DialogFooter>
                 </form>
             </DialogContent>
