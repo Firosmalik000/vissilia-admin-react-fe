@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { getOrders, markAsDelivered, updatePayment, updateResi } from '@/services/api'
+import { getKadoCintaOrders, markKadoCintaAsDelivered, updateKadoCintaPayment, updateKadoCintaResi } from '@/services/api'
 import type { Order } from '@/services/inteface'
 import React, { useEffect, useState } from 'react'
 import { OrderDetailDialog } from './OrderDetailDialog'
@@ -8,7 +8,7 @@ import { formatRupiah } from '@/utils/helper'
 import { ModalResi } from './ModalResi'
 import { ModalPembayaran } from './ModalPembayaran'
 
-const OrdersPage: React.FC = () => {
+const KadoCintaOrdersPage: React.FC = () => {
     const [selectedStatus, setSelectedStatus] = useState<string>('Semua')
     const [orders, setOrders] = useState<Order[]>([])
     const [loading, setLoading] = useState<boolean>(true)
@@ -70,7 +70,7 @@ const OrdersPage: React.FC = () => {
     const fetchOrders = async (page: number = 1, perPage: number, status: string, search: string) => {
         setLoading(true)
         try {
-            const res = await getOrders(page, perPage, status, search)
+            const res = await getKadoCintaOrders(page, perPage, status, search)
             setOrders(res.data)
             setTotalData(res.pagination?.total || res.data.length)
             setTotalPages(res.pagination?.last_page || 1)
@@ -83,7 +83,7 @@ const OrdersPage: React.FC = () => {
 
     const handleUpdateResi = async (id_order: number, resi: string) => {
         try {
-            const res = await updateResi(id_order, resi)
+            const res = await updateKadoCintaResi(id_order, resi)
             console.log(res)
             fetchOrders(page, perPage, selectedStatus, search)
         } catch (err) {
@@ -93,7 +93,7 @@ const OrdersPage: React.FC = () => {
 
     const handleMarkDelivered = async (id_order: number) => {
         try {
-            const res = await markAsDelivered(id_order)
+            const res = await markKadoCintaAsDelivered(id_order)
             console.log(res)
             fetchOrders(page, perPage, selectedStatus, search)
         } catch (err) {
@@ -103,7 +103,7 @@ const OrdersPage: React.FC = () => {
 
     const handleUpdatePayment = async (id_order: number, data: string) => {
         try {
-            const res = await updatePayment(id_order, data)
+            const res = await updateKadoCintaPayment(id_order, data)
             console.log(res)
             fetchOrders(page, perPage, selectedStatus, search)
         } catch (err) {
@@ -180,9 +180,14 @@ const OrdersPage: React.FC = () => {
                                 ))}
                             </div>
                         </>
+                    ) : orders && orders.length === 0 ? (
+                        <div className="text-center">
+                            <h2 className="text-2xl font-bold mb-6 text-gray-800">Tidak ada order</h2>
+                            <p className="text-lg text-gray-500">Belum ada order yang masuk</p>
+                        </div>
                     ) : (
                         <>
-                            <h2 className="text-2xl font-bold mb-6 text-gray-800">List Order</h2>
+                            <h2 className="text-2xl font-bold mb-6 text-gray-800">List Order Kado Cinta</h2>
                             <div className="space-y-4">
                                 {orders.map((order) => (
                                     <div
@@ -233,15 +238,15 @@ const OrdersPage: React.FC = () => {
                                                 Pembayaran
                                             </Button>
                                             {/* <Button
-                                                variant="outline"
-                                                className="px-4 py-2"
-                                                onClick={() => {
-                                                    setSelectedOrder(order)
-                                                    setIsDialogPaymentOpen(true)
-                                                }}
-                                            >
-                                                Pengiriman
-                                            </Button> */}
+                                                    variant="outline"
+                                                    className="px-4 py-2"
+                                                    onClick={() => {
+                                                        setSelectedOrder(order)
+                                                        setIsDialogPaymentOpen(true)
+                                                    }}
+                                                >
+                                                    Pengiriman
+                                                </Button> */}
                                         </div>
                                     </div>
                                 ))}
@@ -271,32 +276,34 @@ const OrdersPage: React.FC = () => {
                                 }}
                             />
                             {/* <ModalPengiriman
-                                isOpen={isDialogShipmentOpen}
-                                onOpenChange={setIsDialogShipmentOpen}
-                                order={selectedOrder}
-                                onSubmitResi={(orderId, data) => {
-                                    // handleUpdatePayment(orderId, data)
-                                }}
-                            /> */}
+                                    isOpen={isDialogShipmentOpen}
+                                    onOpenChange={setIsDialogShipmentOpen}
+                                    order={selectedOrder}
+                                    onSubmitResi={(orderId, data) => {
+                                        // handleUpdatePayment(orderId, data)
+                                    }}
+                                /> */}
                         </>
                     )}
 
                     {/* Pagination */}
-                    <div className="flex justify-center items-center gap-3 mt-8">
-                        <button disabled={page === 1} onClick={() => setPage(page - 1)} className={`px-4 py-2 rounded-lg border ${page === 1 ? 'text-gray-400 border-gray-200 cursor-not-allowed' : 'text-blue-600 border-blue-400 hover:bg-blue-50'}`}>
-                            Prev
-                        </button>
-                        <span className="text-gray-600">
-                            Halaman {page} dari {totalPages}
-                        </span>
-                        <button disabled={page === totalPages} onClick={() => setPage(page + 1)} className={`px-4 py-2 rounded-lg border ${page === totalPages ? 'text-gray-400 border-gray-200 cursor-not-allowed' : 'text-blue-600 border-blue-400 hover:bg-blue-50'}`}>
-                            Next
-                        </button>
-                    </div>
+                    {totalPages > 1 && (
+                        <div className="flex justify-center items-center gap-3 mt-8">
+                            <button disabled={page === 1} onClick={() => setPage(page - 1)} className={`px-4 py-2 rounded-lg border ${page === 1 ? 'text-gray-400 border-gray-200 cursor-not-allowed' : 'text-blue-600 border-blue-400 hover:bg-blue-50'}`}>
+                                Prev
+                            </button>
+                            <span className="text-gray-600">
+                                Halaman {page} dari {totalPages}
+                            </span>
+                            <button disabled={page === totalPages} onClick={() => setPage(page + 1)} className={`px-4 py-2 rounded-lg border ${page === totalPages ? 'text-gray-400 border-gray-200 cursor-not-allowed' : 'text-blue-600 border-blue-400 hover:bg-blue-50'}`}>
+                                Next
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
         </main>
     )
 }
 
-export default OrdersPage
+export default KadoCintaOrdersPage
