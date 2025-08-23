@@ -4,9 +4,10 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, Di
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { postProduct } from '@/services/api';
+import { getProductDetail, postProduct } from '@/services/api';
 import { Trash2 } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import toast from 'react-hot-toast';
 
 interface ProductFormDialogProps {
   isOpen: boolean;
@@ -25,28 +26,69 @@ interface ImagePreview {
 export function ProductFormDialog({ isOpen, onOpenChange, title, payload }: ProductFormDialogProps) {
   const [shippingMethod, setShippingMethod] = useState('');
   const [imagePreviews, setImagePreviews] = useState<ImagePreview[]>([]);
-  const [inputs, setInputs] = useState([0]);
+  const [inputs, setInputs] = useState([]);
+  const [detail, setDetail] = useState<any>({});
   console.log({ payload });
-
+  console.log({ detail });
+  const baseUrl = 'http://127.0.0.1:8000/storage/products/';
   const formRef = useRef<HTMLFormElement>(null);
 
-  const handleSubmit = async (e: any) => {
+  const fetchDetailProduct = async () => {
+    toast.promise(getProductDetail(payload?.slug), {
+      loading: 'Loading...',
+      success: (response) => {
+        setDetail(response.data);
+        setInputs(response?.data?.types);
+        loadExistingImages(response?.data?.image_details);
+        return `Berhasil mengambil data produk ${payload?.name}`;
+      },
+      error: 'Gagal mengambil data produk',
+    });
+  };
+
+  // const handleSubmit = async (e: any) => {
+  //   e.preventDefault();
+  //   const formData = new FormData(formRef.current!);
+  //   const formObject = Object.fromEntries(formData.entries());
+  //   formObject.metode_pengiriman = shippingMethod;
+  //   try {
+  //     const response = await postProduct(formObject);
+  //     console.log({ response });
+  //     if (response) {
+  //       setImagePreviews([]);
+  //       setShippingMethod('');
+  //       onOpenChange(false);
+  //     }
+  //     // Reset form setelah berhasil
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const formData = new FormData(formRef.current!);
-    const formObject = Object.fromEntries(formData.entries());
+    const formObject: any = Object.fromEntries(formData.entries());
     formObject.metode_pengiriman = shippingMethod;
 
-    console.log('Form Data Submitted:', formObject);
-    try {
-      const response = await postProduct(formObject);
-      console.log({ response });
-      // Reset form setelah berhasil
-      // setImagePreviews([]);
-      // setShippingMethod('');
-      // onOpenChange(false);
-    } catch (err) {
-      console.log(err);
-    }
+    toast
+      .promise(postProduct(formObject), {
+        loading: 'Menyimpan produk...',
+        success: 'Produk berhasil disimpan!',
+        error: 'Gagal menyimpan produk, coba lagi!',
+      })
+      .then((response: any) => {
+        if (response) {
+          setImagePreviews([]);
+          setShippingMethod('');
+          onOpenChange(false);
+          // bisa reset form kalau mau:
+          formRef.current?.reset();
+        }
+      })
+      .catch((err: any) => {
+        console.error(err);
+      });
   };
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -87,6 +129,42 @@ export function ProductFormDialog({ isOpen, onOpenChange, title, payload }: Prod
     }
   };
 
+  const loadExistingImages = useCallback(
+    (filenames) => {
+      if (!Array.isArray(filenames)) return;
+
+      filenames.forEach((filename, index) => {
+        if (index < 2) {
+          const imageUrl = `${baseUrl}${filename}`;
+
+          fetch(imageUrl)
+            .then((res) => {
+              if (!res.ok) throw new Error(`HTTP ${res.status}`);
+              return res.blob();
+            })
+            .then((blob) => {
+              const file = new File([blob], filename, { type: blob.type });
+
+              const reader = new FileReader();
+              reader.onloadend = () => {
+                setImagePreviews((prev) => {
+                  const newPreviews = [...prev];
+                  newPreviews[index] = reader.result;
+                  console.log({ newPreviews });
+                  return newPreviews;
+                });
+              };
+              reader.readAsDataURL(blob);
+            })
+            .catch((error) => {
+              console.error(`Gagal load gambar ${filename}:`, error);
+            });
+        }
+      });
+    },
+    [baseUrl]
+  );
+
   const handleAddImage = () => {
     inputRef.current?.click();
   };
@@ -109,6 +187,12 @@ export function ProductFormDialog({ isOpen, onOpenChange, title, payload }: Prod
     setInputs((prev) => prev.filter((_, i) => i !== index));
   };
 
+  useEffect(() => {
+    fetchDetailProduct();
+  }, [isOpen, payload?.slug]);
+
+  console.log({ inputs });
+
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px] md:max-w-[800px] lg:max-w-[900px] rounded-lg">
@@ -123,10 +207,10 @@ export function ProductFormDialog({ isOpen, onOpenChange, title, payload }: Prod
                 <Label htmlFor="name" className="text-left font-semibold text-gray-700">
                   Nama Produk <span className="text-red-500">*</span>
                 </Label>
-                <Input id="name" name="name" placeholder="Cth: Chitato" defaultValue={payload?.name ?? ''} className="rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500" />
+                <Input id="name" name="name" placeholder="Cth: Chitato" defaultValue={detail?.name ?? ''} className="rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500" />
               </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Section: Harga Produk */}
               <div className="flex flex-col gap-2">
                 <Label htmlFor="price" className="text-left font-semibold text-gray-700">
@@ -134,17 +218,7 @@ export function ProductFormDialog({ isOpen, onOpenChange, title, payload }: Prod
                 </Label>
                 <div className="flex items-center">
                   <span className="bg-gray-100 text-gray-700 px-3 py-2 border border-gray-300 rounded-l-md text-sm">Rp</span>
-                  <Input id="price" name="price" type="number" placeholder="90000" className="rounded-r-md border-gray-300 focus:border-blue-500 focus:ring-blue-500" defaultValue={payload?.price ?? ''} />
-                </div>
-              </div>
-              {/* stok */}
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="stock" className="text-left font-semibold text-gray-700">
-                  Stok Produk <span className="text-red-500">*</span>
-                </Label>
-                <div className="flex items-center">
-                  <Input id="stock" name="stock" type="number" className="rounded-l-md border-gray-300 focus:border-blue-500 focus:ring-blue-500" defaultValue={payload?.stock ?? ''} />
-                  <span className="bg-gray-100 text-gray-700 px-3 py-2 border border-gray-300 rounded-r-md text-sm">pcs</span>
+                  <Input id="price" name="price" type="number" placeholder="90000" className="rounded-r-md border-gray-300 focus:border-blue-500 focus:ring-blue-500" defaultValue={detail?.price ?? ''} />
                 </div>
               </div>
 
@@ -154,27 +228,14 @@ export function ProductFormDialog({ isOpen, onOpenChange, title, payload }: Prod
                   Berat <span className="text-red-500">*</span>
                 </Label>
                 <div className="flex items-center">
-                  <Input id="weight" name="weight" type="number" className="rounded-l-md border-gray-300 focus:border-blue-500 focus:ring-blue-500" defaultValue={payload?.weight ?? ''} />
+                  <Input id="weight" name="weight" type="number" className="rounded-l-md border-gray-300 focus:border-blue-500 focus:ring-blue-500" defaultValue={detail?.weight ?? ''} />
                   <span className="bg-gray-100 text-gray-700 px-3 py-2 border border-gray-300 rounded-r-md text-sm">g</span>
                 </div>
               </div>
             </div>
 
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="productDescription" className="text-left font-semibold text-gray-700">
-                Deskripsi Produk <span className="text-red-500">*</span>
-              </Label>
-              <Textarea
-                id="productDescription"
-                name="productDescription"
-                placeholder="Masukkan deskripsi produk..."
-                className="min-h-[100px] rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                defaultValue={payload?.productDescription ?? ''}
-              />
-            </div>
-
             {/* Section: Metode Pengiriman (Simplified) */}
-            <div className="flex flex-col gap-2">
+            {/* <div className="flex flex-col gap-2">
               <Label className="text-left font-semibold text-gray-700">
                 Metode Pengiriman <span className="text-red-500">*</span>
               </Label>
@@ -198,7 +259,7 @@ export function ProductFormDialog({ isOpen, onOpenChange, title, payload }: Prod
                   J&T Express
                 </Button>
               </div>
-            </div>
+            </div> */}
 
             {/* Image Section */}
             <div className="flex flex-col gap-4">
@@ -255,7 +316,7 @@ export function ProductFormDialog({ isOpen, onOpenChange, title, payload }: Prod
             <Button type="button" className="rounded-md px-6 py-2  bg-blue-600 text-white hover:bg-blue-700" onClick={handleAddInput}>
               Tambahkan Variant
             </Button>
-            {inputs.map((_, index) => (
+            {inputs?.map((item, index) => (
               <div key={index} className="relative mb-6 p-6 border border-gray-200 rounded-lg shadow-md bg-white">
                 <div className="flex items-center justify-between mb-4 pb-2 border-b border-gray-100">
                   <p className="text-lg font-semibold text-gray-800">Variant Produk {index + 1}</p>
@@ -277,6 +338,7 @@ export function ProductFormDialog({ isOpen, onOpenChange, title, payload }: Prod
                     <Input
                       id={`name-${index}`}
                       type="text"
+                      defaultValue={item?.variant ?? ''}
                       name={`variant[${index}][name]`}
                       placeholder="Contoh: Kemeja Polos Ukuran M"
                       className="w-full border border-gray-300 rounded-md px-4 py-2 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
@@ -291,6 +353,7 @@ export function ProductFormDialog({ isOpen, onOpenChange, title, payload }: Prod
                       id={`price-${index}`}
                       type="number"
                       name={`variant[${index}][price]`}
+                      defaultValue={item?.price ?? ''}
                       placeholder="Contoh: 150000"
                       className="w-full border border-gray-300 rounded-md px-4 py-2 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
                     />
@@ -304,6 +367,7 @@ export function ProductFormDialog({ isOpen, onOpenChange, title, payload }: Prod
                       type="number"
                       name={`variant[${index}][final_price]`}
                       placeholder="Contoh: 150000"
+                      defaultValue={item?.final_price ?? ''}
                       className="w-full border border-gray-300 rounded-md px-4 py-2 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
                     />
                   </div>
@@ -317,6 +381,7 @@ export function ProductFormDialog({ isOpen, onOpenChange, title, payload }: Prod
                       type="number"
                       name={`variant[${index}][discount_amount]`}
                       placeholder="Contoh: 20000"
+                      defaultValue={item?.discount_amount ?? ''}
                       className="w-full border border-gray-300 rounded-md px-4 py-2 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
                     />
                   </div>
@@ -329,6 +394,7 @@ export function ProductFormDialog({ isOpen, onOpenChange, title, payload }: Prod
                       type="number"
                       name={`variant[${index}][discount_percentage]`}
                       placeholder="Contoh: 20000"
+                      defaultValue={item?.discountPercentage ?? ''}
                       className="w-full border border-gray-300 rounded-md px-4 py-2 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
                     />
                   </div>
@@ -342,6 +408,7 @@ export function ProductFormDialog({ isOpen, onOpenChange, title, payload }: Prod
                       type="number"
                       name={`variant[${index}][stock]`}
                       placeholder="Contoh: 100"
+                      defaultValue={item?.stock ?? ''}
                       className="w-full border border-gray-300 rounded-md px-4 py-2 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
                     />
                   </div>
@@ -355,6 +422,7 @@ export function ProductFormDialog({ isOpen, onOpenChange, title, payload }: Prod
                       name={`variant[${index}][description]`}
                       placeholder="Berikan deskripsi singkat untuk variant produk ini, contoh: Tersedia dalam berbagai warna dan ukuran."
                       rows={3}
+                      defaultValue={item?.description ?? ''}
                       className="w-full border border-gray-300 rounded-md px-4 py-2 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 resize-y"
                     />
                   </div>
