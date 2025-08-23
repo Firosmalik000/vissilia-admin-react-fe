@@ -1,45 +1,56 @@
-import type { CategoryResponse, LoginPayload, LoginResponse, OrderResponse, ProductApiResponse, ResponseSuccess, User } from './inteface'
-import api from './interceptor'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import type { CategoryResponse, LoginPayload, LoginResponse, OrderResponse, ProductApiResponse, ResponseSuccess, User } from './inteface';
+import api from './interceptor';
 
-const API_URL: string = import.meta.env.VITE_API_URL as string
+const API_URL: string = import.meta.env.VITE_API_URL as string;
 
 export const login = async (payload: LoginPayload): Promise<LoginResponse> => {
-    const res = await api.post<LoginResponse>(`${API_URL}/admin/auth/login`, payload)
-    return res.data
-}
+  const res = await api.post<LoginResponse>(`${API_URL}/admin/auth/login`, payload);
+  return res.data;
+};
 
 export const getUser = async (): Promise<User> => {
-    const response = await api.get<{ user: User }>(`${API_URL}/admin/check-user`)
-    return response.data.user
-}
+  const response = await api.get<{ user: User }>(`${API_URL}/admin/check-user`);
+  return response.data.user;
+};
 
 export const getProduct = async (page: number = 1, perPage: number = 10, category?: string, search?: string): Promise<ProductApiResponse> => {
-    const params: Record<string, string | number> = { page, per_page: perPage }
-    if (category && category !== 'Semua') params.category = category
-    if (search) params.search = search
+  const params: Record<string, string | number> = { page, per_page: perPage };
+  if (category && category !== 'Semua') params.category = category;
+  if (search) params.search = search;
 
-    const response = await api.get<ProductApiResponse>(`${API_URL}/admin/products`, {
-        params,
-    })
-    return response.data
-}
+  const response = await api.get<ProductApiResponse>(`${API_URL}/admin/products`, {
+    params,
+  });
+  return response.data;
+};
+export const postProduct = async (payload: any): Promise<any> => {
+  const formData = new FormData();
+  Object.keys(payload).forEach((key) => {
+    formData.append(key, payload[key]);
+  });
+
+  const response = await api.post(`${API_URL}/admin/products`, formData);
+
+  return response.data;
+};
 
 export const getCategoryActive = async (): Promise<CategoryResponse> => {
-    const response = await api.get<CategoryResponse>(`${API_URL}/admin/categories/active`)
-    return response.data
-}
+  const response = await api.get<CategoryResponse>(`${API_URL}/admin/categories/active`);
+  return response.data;
+};
 
 export const getOrders = async (page: number = 1, perPage: number = 10, category?: string, search?: string): Promise<OrderResponse> => {
-    const params: Record<string, string | number> = { page, per_page: perPage }
-    if (category && category !== 'Semua') params.category = category
-    if (search) params.search = search
-    const response = await api.get<OrderResponse>(`${API_URL}/admin/orders`, {
-        params,
-    })
-    return response.data
-}
+  const params: Record<string, string | number> = { page, per_page: perPage };
+  if (category && category !== 'Semua') params.category = category;
+  if (search) params.search = search;
+  const response = await api.get<OrderResponse>(`${API_URL}/admin/orders`, {
+    params,
+  });
+  return response.data;
+};
 
 export const updateResi = async (id_order: number, resi: string): Promise<ResponseSuccess> => {
-    const response = await api.put<ResponseSuccess>(`${API_URL}/admin/orders/updateResi`, { id_order, resi })
-    return response.data
-}
+  const response = await api.put<ResponseSuccess>(`${API_URL}/admin/orders/updateResi`, { id_order, resi });
+  return response.data;
+};
