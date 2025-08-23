@@ -142,7 +142,16 @@ const menuItems: MenuItem[] = [
             { name: 'Marketing', href: '/program/program-marketing' },
         ],
     },
-    { name: 'Reward', href: '#reward', icon: RewardIcon },
+    {
+        name: 'Kado Cinta',
+        href: '#reward',
+        icon: RewardIcon,
+        submenu: [
+            { name: 'Kado Cinta', href: '/program/kado-cinta' },
+            { name: 'Kategori Kado Cinta', href: '/program/kategori-kado-cinta' },
+            { name: 'Order', href: '/program/kado-cinta-orders' },
+        ],
+    },
     { name: 'User', href: '/user', icon: UserIcon },
     {
         name: 'Approval',

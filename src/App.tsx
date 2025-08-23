@@ -6,6 +6,9 @@ import { setNavigator } from './utils/navigate'
 import ProtectedRoute from './route/protectedRoute'
 import PublicRoute from './route/publicRoute'
 import OrdersPage from './pages/e-commerce/orders'
+import KadoCintaOrdersPage from './pages/kado-cinta/orders'
+import KadoCintaPage from './pages/kado-cinta/kado-cinta'
+import CategoryKadoCinta from './pages/kado-cinta/Kategori'
 
 function AppContent() {
     const navigate = useNavigate()
@@ -35,6 +38,9 @@ function AppContent() {
                     <Route path="program/program-chart" element={<ProgramChart.default />} />
                     <Route path="program/program-produk" element={<ProgramProduk.default />} />
                     <Route path="program/program-marketing" element={<ProgramMarketing.default />} />
+                    <Route path="program/kado-cinta-orders" element={<KadoCintaOrdersPage />} />
+                    <Route path="program/kado-cinta" element={<KadoCintaPage />} />
+                    <Route path="program/kategori-kado-cinta" element={<CategoryKadoCinta />} />
                     <Route path="notification" element={<Notification.default />} />
                     <Route path="activity" element={<Activity.default />} />
                     <Route path="user" element={<User.default />} />

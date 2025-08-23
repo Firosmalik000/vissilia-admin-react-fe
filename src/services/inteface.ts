@@ -51,6 +51,21 @@ export interface Product {
   total_sold: number;
   creator: Creator;
 }
+// export interface Product {
+//     id: number
+//     name: string
+//     slug: string
+//     image: string
+//     weight: number
+//     image_details: string[]
+//     updated_by: number | null
+//     is_release: boolean
+//     primary_image: string | null
+//     price: number
+//     final_price: number
+//     total_sold: number
+//     creator: Creator
+// }
 
 export interface Pagination {
   current_page: number;
@@ -134,4 +149,86 @@ export interface Shipment {
   recipient_city: string;
   recipient_province: string;
   recipient_postcode: string;
+  id: number;
+  order_id: number;
+  courier: string;
+  shipping_status: string;
+  recipient_name: string;
+  recipient_address: string;
+  recipient_city: string;
+  recipient_province: string;
+  recipient_postcode: string;
+  tracking_number: string | null;
+}
+
+export interface KadoCintaCategory {
+  id: number;
+  name: string;
+  is_active: boolean;
+  is_release: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface KadoCintaCategoryResponse {
+  data: KadoCintaCategory[];
+  message: string;
+}
+
+export interface ResponseListUser {
+  data: User[];
+  message: string;
+}
+
+export interface ProductHeader {
+  id: number;
+  name: string;
+  slug: string;
+  image: string;
+  weight: number;
+  price: number;
+  final_price: number;
+  image_details: string;
+  is_release: number;
+  total_sold: number;
+  primary_image: string | null;
+  updated_by: number | null;
+}
+
+export interface Product {
+  id: number;
+  product_id: number;
+  variant: string;
+  price: number;
+  discount_amount: number;
+  discountPercentage: number;
+  final_price: number;
+  description: string;
+  image: string;
+  is_active: number;
+  is_release: number;
+  total_sold: number;
+  updated_by: number | null;
+  stock: number;
+  product_header: ProductHeader;
+}
+
+export interface KadoCinta {
+  id: number;
+  order_id: string | null;
+  user_id: number;
+  kado_cinta_category_id: number;
+  category_name: string;
+  kado_name: string;
+  description: string;
+  type: string;
+  quantity: number;
+  final_price: number;
+  cashback_amount: number;
+  is_progress: number;
+  shipment_method: string | null;
+  process_at: string | null;
+  updated_at: string | null;
+  created_at: string;
+  product: Product;
 }
