@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { CategoryResponse, KadoCinta, KadoCintaCategoryResponse, LoginPayload, LoginResponse, OrderResponse, ProductApiResponse, ResponseListUser, ResponseSuccess, User } from './inteface'
 import api from './interceptor'
 
@@ -23,12 +24,21 @@ export const getProduct = async (page: number = 1, perPage: number = 10, categor
     })
     return response.data
 }
+export const postProduct = async (payload: any): Promise<any> => {
+    const formData = new FormData()
+    Object.keys(payload).forEach((key) => {
+        formData.append(key, payload[key])
+    })
+
+    const response = await api.post(`${API_URL}/admin/products`, formData)
+
+    return response.data
+}
 
 export const getCategoryActive = async (): Promise<CategoryResponse> => {
     const response = await api.get<CategoryResponse>(`${API_URL}/admin/categories/active`)
     return response.data
 }
-
 // Orders
 export const getOrders = async (page: number = 1, perPage: number = 10, status?: string, search?: string): Promise<OrderResponse> => {
     const params: Record<string, string | number> = { page, per_page: perPage }
