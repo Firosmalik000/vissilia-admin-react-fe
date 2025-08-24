@@ -144,7 +144,15 @@ const ProgramProduk: React.FC = () => {
             </>
           ) : (
             <>
-              <h2 className="text-2xl font-bold mb-6 text-gray-800">List Produk</h2>
+              <div className="flex justify-between">
+                <h2 className="text-2xl font-bold mb-6 text-gray-800">List Produk</h2>
+                <div className="flex items-center space-x-4">
+                  <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700" onClick={() => setIsOpen(true)}>
+                    Tambah Produk
+                  </button>
+                </div>
+              </div>
+
               <div className="space-y-4">
                 {produkList.map((produk) => (
                   <div key={produk.id} className="bg-white rounded-xl shadow-md p-4 flex gap-4 items-center hover:shadow-lg transition">

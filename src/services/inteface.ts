@@ -149,15 +149,6 @@ export interface Shipment {
   recipient_city: string;
   recipient_province: string;
   recipient_postcode: string;
-  id: number;
-  order_id: number;
-  courier: string;
-  shipping_status: string;
-  recipient_name: string;
-  recipient_address: string;
-  recipient_city: string;
-  recipient_province: string;
-  recipient_postcode: string;
   tracking_number: string | null;
 }
 
@@ -206,7 +197,7 @@ export interface Product {
   description: string;
   image: string;
   is_active: number;
-  is_release: number;
+  is_release: boolean;
   total_sold: number;
   updated_by: number | null;
   stock: number;

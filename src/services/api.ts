@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { CategoryResponse, KadoCinta, KadoCintaCategoryResponse, LoginPayload, LoginResponse, OrderResponse, ProductApiResponse, ResponseListUser, ResponseSuccess, User } from './inteface';
+import type { CategoryResponse, KadoCinta, KadoCintaCategoryResponse, LoginPayload, LoginResponse, OrderResponse, ProductApiResponse, ProductDetailApiResponse, ResponseListUser, ResponseSuccess, User } from './inteface';
 import api from './interceptor';
 
 const API_URL: string = import.meta.env.VITE_API_URL as string;
@@ -22,6 +22,10 @@ export const getProduct = async (page: number = 1, perPage: number = 10, categor
   const response = await api.get<ProductApiResponse>(`${API_URL}/admin/products`, {
     params,
   });
+  return response.data;
+};
+export const getProductDetail = async (slug: string): Promise<ProductDetailApiResponse> => {
+  const response = await api.get<ProductDetailApiResponse>(`${API_URL}/admin/products/${slug}`);
   return response.data;
 };
 export const postProduct = async (payload: any): Promise<any> => {

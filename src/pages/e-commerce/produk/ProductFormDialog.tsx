@@ -38,6 +38,7 @@ export function ProductFormDialog({ isOpen, onOpenChange, title, payload }: Prod
       loading: 'Loading...',
       success: (response) => {
         setDetail(response.data);
+        console.log({ response });
         setInputs(response?.data?.types);
         loadExistingImages(response?.data?.image_details);
         return `Berhasil mengambil data produk ${payload?.name}`;
@@ -45,25 +46,6 @@ export function ProductFormDialog({ isOpen, onOpenChange, title, payload }: Prod
       error: 'Gagal mengambil data produk',
     });
   };
-
-  // const handleSubmit = async (e: any) => {
-  //   e.preventDefault();
-  //   const formData = new FormData(formRef.current!);
-  //   const formObject = Object.fromEntries(formData.entries());
-  //   formObject.metode_pengiriman = shippingMethod;
-  //   try {
-  //     const response = await postProduct(formObject);
-  //     console.log({ response });
-  //     if (response) {
-  //       setImagePreviews([]);
-  //       setShippingMethod('');
-  //       onOpenChange(false);
-  //     }
-  //     // Reset form setelah berhasil
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -82,7 +64,6 @@ export function ProductFormDialog({ isOpen, onOpenChange, title, payload }: Prod
           setImagePreviews([]);
           setShippingMethod('');
           onOpenChange(false);
-          // bisa reset form kalau mau:
           formRef.current?.reset();
         }
       })
@@ -194,7 +175,14 @@ export function ProductFormDialog({ isOpen, onOpenChange, title, payload }: Prod
   console.log({ inputs });
 
   return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(close) => {
+        onOpenChange(close);
+        setImagePreviews([]);
+        setShippingMethod('');
+      }}
+    >
       <DialogContent className="sm:max-w-[600px] md:max-w-[800px] lg:max-w-[900px] rounded-lg">
         <form action="" onSubmit={handleSubmit} ref={formRef}>
           <DialogHeader className="p-6 pb-0">
@@ -207,6 +195,7 @@ export function ProductFormDialog({ isOpen, onOpenChange, title, payload }: Prod
                 <Label htmlFor="name" className="text-left font-semibold text-gray-700">
                   Nama Produk <span className="text-red-500">*</span>
                 </Label>
+                <input type="hidden" name="id" defaultValue={detail?.id ?? ''} />
                 <Input id="name" name="name" placeholder="Cth: Chitato" defaultValue={detail?.name ?? ''} className="rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500" />
               </div>
             </div>
@@ -233,33 +222,6 @@ export function ProductFormDialog({ isOpen, onOpenChange, title, payload }: Prod
                 </div>
               </div>
             </div>
-
-            {/* Section: Metode Pengiriman (Simplified) */}
-            {/* <div className="flex flex-col gap-2">
-              <Label className="text-left font-semibold text-gray-700">
-                Metode Pengiriman <span className="text-red-500">*</span>
-              </Label>
-              <div className="flex flex-wrap gap-3">
-                <Button
-                  type="button"
-                  variant={shippingMethod === 'jne' ? 'default' : 'outline'}
-                  onClick={() => setShippingMethod('jne')}
-                  className={`flex items-center gap-2 rounded-md px-4 py-2 transition-all duration-200 ${shippingMethod === 'jne' ? 'bg-blue-600 text-white hover:bg-blue-700' : 'border-gray-300 hover:bg-gray-50'}`}
-                >
-                  <img src="https://placehold.co/40x20/e0e0e0/000000?text=JNE" alt="JNE Logo" className="h-5 object-contain" />
-                  JNE
-                </Button>
-                <Button
-                  type="button"
-                  variant={shippingMethod === 'jnt' ? 'default' : 'outline'}
-                  onClick={() => setShippingMethod('jnt')}
-                  className={`flex items-center gap-2 rounded-md px-4 py-2 transition-all duration-200 ${shippingMethod === 'jnt' ? 'bg-blue-600 text-white hover:bg-blue-700' : 'border-gray-300 hover:bg-gray-50'}`}
-                >
-                  <img src="https://placehold.co/40x20/e0e0e0/000000?text=J&T" alt="J&T Logo" className="h-5 object-contain" />
-                  J&T Express
-                </Button>
-              </div>
-            </div> */}
 
             {/* Image Section */}
             <div className="flex flex-col gap-4">
@@ -335,6 +297,7 @@ export function ProductFormDialog({ isOpen, onOpenChange, title, payload }: Prod
                     <Label htmlFor={`name-${index}`} className="block text-sm font-medium text-gray-700 mb-1.5">
                       Nama Produk
                     </Label>
+                    <input type="hidden" name="variant[index][variant_id]" value={item?.id ?? ''} />
                     <Input
                       id={`name-${index}`}
                       type="text"
