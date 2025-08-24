@@ -24,10 +24,6 @@ export const getProduct = async (page: number = 1, perPage: number = 10, categor
   });
   return response.data;
 };
-export const getProductDetail = async (slug: string): Promise<ProductDetailApiResponse> => {
-  const response = await api.get<ProductDetailApiResponse>(`${API_URL}/admin/products/${slug}`);
-  return response.data;
-};
 export const postProduct = async (payload: any): Promise<any> => {
   const formData = new FormData();
   Object.keys(payload).forEach((key) => {
@@ -36,6 +32,22 @@ export const postProduct = async (payload: any): Promise<any> => {
 
   const response = await api.post(`${API_URL}/admin/products`, formData);
 
+  return response.data;
+};
+
+export const putProduct = async (payload: any): Promise<any> => {
+  const formData = new FormData();
+  Object.keys(payload).forEach((key) => {
+    formData.append(key, payload[key]);
+  });
+
+  const response = await api.put(`${API_URL}/admin/products`, formData);
+
+  return response.data;
+};
+
+export const getProductDetail = async (slug: string): Promise<ProductDetailApiResponse> => {
+  const response = await api.get<ProductDetailApiResponse>(`${API_URL}/admin/products/${slug}`);
   return response.data;
 };
 

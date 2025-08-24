@@ -36,11 +36,46 @@ export interface Creator {
   name: string;
 }
 
+export interface Type {
+  id: number;
+  product_id: number;
+  variant: string;
+  price: number;
+  discount_amount: number;
+  discountPercentage: number;
+  final_price: number;
+  description: string;
+  image: string;
+  is_active: number;
+  is_release: number;
+  total_sold: number;
+  updated_by: number | null;
+  stock: number;
+}
+
+export interface Type {
+  id: number;
+  product_id: number;
+  variant: string;
+  price: number;
+  discount_amount: number;
+  discountPercentage: number;
+  final_price: number;
+  description: string;
+  image: string;
+  is_active: number;
+  is_release: number;
+  total_sold: number;
+  updated_by: number | null;
+  stock: number;
+}
+
 export interface Product {
   id: number;
   name: string;
   slug: string;
   image: string;
+  types: Type[];
   weight: number;
   image_details: string[];
   updated_by: number | null;
@@ -80,7 +115,7 @@ export interface ProductApiResponse {
   message: string;
 }
 export interface ProductDetailApiResponse {
-  data: Product[];
+  data: Product;
   message: string;
 }
 
@@ -186,7 +221,7 @@ export interface ProductHeader {
   updated_by: number | null;
 }
 
-export interface Product {
+export interface ProductKadoCinta {
   id: number;
   product_id: number;
   variant: string;
@@ -197,7 +232,7 @@ export interface Product {
   description: string;
   image: string;
   is_active: number;
-  is_release: boolean;
+  is_release: number;
   total_sold: number;
   updated_by: number | null;
   stock: number;
@@ -221,5 +256,5 @@ export interface KadoCinta {
   process_at: string | null;
   updated_at: string | null;
   created_at: string;
-  product: Product;
+  product: ProductKadoCinta;
 }

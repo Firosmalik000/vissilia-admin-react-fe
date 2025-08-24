@@ -23,7 +23,7 @@ const ProgramProduk: React.FC = () => {
   const [page, setPage] = useState<number>(1);
   const [perPage] = useState<number>(5);
   const [search, setSearch] = useState<string>('');
-  const [payload, setPayload] = useState<any>({});
+  const [payload, setPayload] = useState<Product>();
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const fetchProducts = async (page: number = 1, perPage: number, selectedCategory: string, search: string) => {
@@ -59,10 +59,14 @@ const ProgramProduk: React.FC = () => {
   useEffect(() => {
     fetchCategories();
   }, []);
-  const handleOpenData = (data) => {
+  const handleOpenData = (data: Product) => {
     setIsOpen(true);
     setPayload(data);
   };
+
+  useEffect(() => {
+    if (!isOpen) setPayload(undefined);
+  }, [isOpen]);
 
   return (
     <main className="p-6 flex-1">
@@ -110,18 +114,31 @@ const ProgramProduk: React.FC = () => {
               </div>
             </div>
           </div>
-          {/* Search */}
-          <div className="flex-1 min-w-[200px] mb-4 max-w-sm py-2">
-            <input
-              type="text"
-              placeholder="Cari nama produk..."
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-                setPage(1);
-              }}
-              className="w-full border px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+          <div className="flex justify-between">
+            {/* Search */}
+            <div className="flex-1 min-w-[200px] mb-4 max-w-sm py-2">
+              <input
+                type="text"
+                placeholder="Cari nama produk..."
+                value={search}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setPage(1);
+                }}
+                className="w-full border px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            {/* Tambah Produk */}
+            <div className="flex justify-end mb-4">
+              <button
+                onClick={() => {
+                  setIsOpen(true);
+                }}
+                className="bg-green-600! text-white px-4 py-2 rounded-lg hover:bg-green-700! transition"
+              >
+                Tambah Produk
+              </button>
+            </div>
           </div>
           {/* List Produk */}
           {loading ? (
@@ -144,15 +161,7 @@ const ProgramProduk: React.FC = () => {
             </>
           ) : (
             <>
-              <div className="flex justify-between">
-                <h2 className="text-2xl font-bold mb-6 text-gray-800">List Produk</h2>
-                <div className="flex items-center space-x-4">
-                  <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700" onClick={() => setIsOpen(true)}>
-                    Tambah Produk
-                  </button>
-                </div>
-              </div>
-
+              <h2 className="text-2xl font-bold mb-6 text-gray-800">List Produk</h2>
               <div className="space-y-4">
                 {produkList.map((produk) => (
                   <div key={produk.id} className="bg-white rounded-xl shadow-md p-4 flex gap-4 items-center hover:shadow-lg transition">
@@ -165,8 +174,8 @@ const ProgramProduk: React.FC = () => {
                         {produk.final_price !== produk.price && <span className="text-gray-500 line-through">{formatRupiah(produk.final_price)}</span>}
                       </div>
                     </div>
-                    <button onClick={() => handleOpenData(produk)} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-                      Beli
+                    <button onClick={() => handleOpenData(produk)} className="bg-blue-600! text-white px-4 py-2 rounded-lg hover:bg-blue-700!">
+                      Update
                     </button>
                   </div>
                 ))}
