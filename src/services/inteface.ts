@@ -241,3 +241,9 @@ export interface KadoCinta {
     created_at: string
     product: ProductKadoCinta
 }
+
+export interface ProductOption {
+    id: number
+    variant: string
+    image?: string
+}

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { CategoryResponse, KadoCinta, KadoCintaCategoryResponse, LoginPayload, LoginResponse, OrderResponse, ProductApiResponse, ProductDetailApiResponse, ResponseListUser, ResponseSuccess, User } from './inteface'
+import type { CategoryResponse, KadoCinta, KadoCintaCategoryResponse, LoginPayload, LoginResponse, OrderResponse, ProductApiResponse, ProductDetailApiResponse, ProductOption, ResponseListUser, ResponseSuccess, User } from './inteface'
 import api from './interceptor'
 
 const API_URL: string = import.meta.env.VITE_API_URL as string
@@ -139,7 +139,31 @@ export const getListUsers = async (search: string): Promise<ResponseListUser> =>
     return response.data
 }
 
+export const getListProductKadoCinta = async (search: string): Promise<{ data: ProductOption[] }> => {
+    const response = await api.get<{ data: ProductOption[] }>(`${API_URL}/admin/kado-cinta/list-product`, { params: { search } })
+    return response.data
+}
+
 export const getKadoCinta = async (user_id: number): Promise<{ data: KadoCinta[]; message: string }> => {
     const response = await api.get<{ data: KadoCinta[]; message: string }>(`${API_URL}/admin/kado-cinta/`, { params: { user_id } })
+    return response.data
+}
+
+export const createKadoCinta = async (
+    userId: number,
+    data: {
+        productTypeId: number
+        categoryId: number
+        namaKado: string
+        quantity: number
+    }
+): Promise<ResponseSuccess> => {
+    const response = await api.post<ResponseSuccess>(`${API_URL}/admin/kado-cinta`, {
+        user_id: userId,
+        product_type_id: data.productTypeId,
+        kado_cinta_category_id: data.categoryId,
+        kado_name: data.namaKado,
+        quantity: data.quantity,
+    })
     return response.data
 }

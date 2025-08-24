@@ -1,22 +1,23 @@
 import { Button } from '@/components/ui/button'
-import { getKadoCinta, getListUsers } from '@/services/api'
+import { createKadoCinta, getKadoCinta, getListUsers } from '@/services/api'
 import type { KadoCinta, User } from '@/services/inteface'
 import React, { useEffect, useState } from 'react'
 import { SearchableUserSelect } from '@/components/SearchableSelect'
 import CreateKadoCintaModal from './ModalCreateKado'
+import ModalDetailKadoCinta from './ModalDetailKadoCinta'
 
 const KadoCintaPage: React.FC = () => {
     const [searchUser, setSearchUser] = useState('')
     const [userOptions, setUserOptions] = useState<User[]>([])
     const [selectedUser, setSelectedUser] = useState<User | null>(null)
+    const [selectedKado, setSelectedKado] = useState<KadoCinta | null>(null)
+    const [openDetailModal, setOpenDetailModal] = useState(false)
 
     const [kadoCinta, setKadoCinta] = useState<KadoCinta[]>([])
     const [loading, setLoading] = useState(false)
 
     // Modal state
     const [openModal, setOpenModal] = useState(false)
-    const [newKadoName, setNewKadoName] = useState('')
-    const [newQuantity, setNewQuantity] = useState(1)
 
     useEffect(() => {
         const delayDebounce = setTimeout(() => {
@@ -48,18 +49,15 @@ const KadoCintaPage: React.FC = () => {
         }
     }
 
-    const handleCreateKado = () => {
+    const handleCreateKado = async (data: { productTypeId: number; categoryId: number; namaKado: string; quantity: number }) => {
         if (!selectedUser) return
-        console.log('Submit new kado cinta:', {
-            userId: selectedUser.id,
-            name: newKadoName,
-            quantity: newQuantity,
-        })
-        // TODO: panggil API create kado cinta di sini
-
-        setOpenModal(false)
-        setNewKadoName('')
-        setNewQuantity(1)
+        try {
+            await createKadoCinta(selectedUser.id, data)
+            setOpenModal(false)
+            fetchOrders(selectedUser.id) // refresh list
+        } catch (err) {
+            console.error('Gagal buat kado:', err)
+        }
     }
 
     return (
@@ -92,7 +90,14 @@ const KadoCintaPage: React.FC = () => {
                             {/* Tambah Kado Cinta */}
                             <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {kadoCinta.map((kado) => (
-                                    <div key={kado.id} className="bg-gray-200 p-4 rounded-xl shadow flex flex-col justify-between hover:cursor-pointer hover:bg-gray-100">
+                                    <div
+                                        key={kado.id}
+                                        onClick={() => {
+                                            setSelectedKado(kado)
+                                            setOpenDetailModal(true)
+                                        }}
+                                        className="bg-gray-200 p-4 rounded-xl shadow flex flex-col justify-between hover:cursor-pointer hover:bg-gray-100"
+                                    >
                                         <div>
                                             <h3 className="font-semibold text-lg">
                                                 {kado.kado_name} ({kado.product.product_header.name} - {kado.product.variant})
@@ -102,11 +107,6 @@ const KadoCintaPage: React.FC = () => {
                                                 <p className="text-lg text-black mt-1">Rp {kado.final_price.toLocaleString()}</p>
                                                 <span className="text-sm text-gray-500 mt-1 line-through">Rp {kado.product.price.toLocaleString()}</span>
                                             </div>
-                                        </div>
-                                        <div className="mt-4 flex justify-end">
-                                            <Button variant="outline" size="sm">
-                                                Detail
-                                            </Button>
                                         </div>
                                     </div>
                                 ))}
@@ -118,7 +118,8 @@ const KadoCintaPage: React.FC = () => {
                 )}
             </div>
 
-            <CreateKadoCintaModal open={openModal} onOpenChange={setOpenModal} selectedUser={selectedUser} newKadoName={newKadoName} setNewKadoName={setNewKadoName} newQuantity={newQuantity} setNewQuantity={setNewQuantity} onSubmit={handleCreateKado} />
+            <CreateKadoCintaModal open={openModal} onOpenChange={setOpenModal} selectedUser={selectedUser} onSubmit={handleCreateKado} />
+            <ModalDetailKadoCinta open={openDetailModal} onOpenChange={setOpenDetailModal} kado={selectedKado} />
         </main>
     )
 }
