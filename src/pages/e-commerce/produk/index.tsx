@@ -1,8 +1,10 @@
 import { productUrl } from '@/pages/utils/imageUrl';
-import { getCategoryActive, getProduct } from '@/services/api';
+import { deleteProduct, getCategoryActive, getProduct, updateRealese } from '@/services/api';
 import { type Category, type Product } from '@/services/inteface';
 import React, { useEffect, useState } from 'react';
 import { ProductFormDialog } from './ProductFormDialog';
+import { CheckCircle, Edit, TimerResetIcon, Trash, Upload } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 const formatRupiah = (amount: number): string => {
   return new Intl.NumberFormat('id-ID', {
@@ -54,7 +56,7 @@ const ProgramProduk: React.FC = () => {
 
   useEffect(() => {
     fetchProducts(page, perPage, selectedCategory, search);
-  }, [page, selectedCategory, search]);
+  }, [page, selectedCategory, search, isOpen]);
 
   useEffect(() => {
     fetchCategories();
@@ -67,6 +69,31 @@ const ProgramProduk: React.FC = () => {
   useEffect(() => {
     if (!isOpen) setPayload(undefined);
   }, [isOpen]);
+
+  const handleRealese = async (id: number) => {
+    try {
+      const response = await updateRealese(id);
+      if (response) {
+        toast.success('Berhasil merilis produk');
+      }
+    } catch (error: any) {
+      toast.error('Gagal merilis produk : ' + error.message);
+    }
+
+    fetchProducts(page, perPage, selectedCategory, search);
+  };
+  const handleDeleteProduct = async (id: number) => {
+    try {
+      const response = await deleteProduct(id);
+      if (response) {
+        toast.success('Berhasil merilis produk');
+      }
+    } catch (error: any) {
+      toast.error('Gagal merilis produk : ' + error.message);
+    }
+
+    fetchProducts(page, perPage, selectedCategory, search);
+  };
 
   return (
     <main className="p-6 flex-1">
@@ -164,19 +191,48 @@ const ProgramProduk: React.FC = () => {
               <h2 className="text-2xl font-bold mb-6 text-gray-800">List Produk</h2>
               <div className="space-y-4">
                 {produkList.map((produk) => (
-                  <div key={produk.id} className="bg-white rounded-xl shadow-md p-4 flex gap-4 items-center hover:shadow-lg transition">
-                    <img src={productUrl(produk.image)} alt={produk.name} className="w-24 h-24 object-cover rounded-lg shadow-sm" />
+                  <div key={produk.id} className="bg-white rounded-xl shadow-md p-4 flex gap-4 items-center hover:shadow-lg transition group">
+                    {/* Gambar Produk */}
+                    <div className="relative">
+                      <img src={productUrl(produk.image)} alt={produk.name} className="w-24 h-24 object-cover rounded-lg shadow-sm group-hover:scale-105 transition-transform" />
+                      {produk.final_price !== produk.price && <span className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded-md shadow">Diskon</span>}
+                    </div>
+
+                    {/* Info Produk */}
                     <div className="flex-1">
                       <h3 className="font-semibold text-lg text-gray-800">{produk.name}</h3>
                       <p className="text-gray-600 text-sm">Terjual: {produk.total_sold}</p>
-                      <div className="mt-2 flex gap-3">
+
+                      {/* Harga */}
+                      <div className="mt-2 flex gap-3 items-center">
                         <span className="font-bold text-blue-600 text-lg">{formatRupiah(produk.price)}</span>
-                        {produk.final_price !== produk.price && <span className="text-gray-500 line-through">{formatRupiah(produk.final_price)}</span>}
+                        {produk.final_price !== produk.price && <span className="text-gray-500 line-through text-sm">{formatRupiah(produk.final_price)}</span>}
                       </div>
                     </div>
-                    <button onClick={() => handleOpenData(produk)} className="bg-blue-600! text-white px-4 py-2 rounded-lg hover:bg-blue-700!">
-                      Update
-                    </button>
+
+                    {/* Aksi */}
+                    <div className="flex flex-col sm:flex-row gap-2">
+                      {' '}
+                      {produk?.is_release === 1 ? (
+                        <button onClick={() => handleRealese(produk?.id)} className="flex items-center bg-red-400 hover:bg-red-700 text-white px-4 py-2 rounded-lg shadow-sm transition">
+                          <TimerResetIcon className="w-4 h-4 mr-2" />
+                          <span className="text-sm">UnRelease</span>
+                        </button>
+                      ) : (
+                        <button onClick={() => handleRealese(produk?.id)} className="flex items-center bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-sm transition">
+                          <CheckCircle className="w-4 h-4 mr-2" />
+                          <span className="text-sm">Release</span>
+                        </button>
+                      )}
+                      <button onClick={() => handleOpenData(produk)} className="flex items-center bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg shadow-sm transition">
+                        <Edit className="w-4 h-4 mr-2" />
+                        <span className="text-sm">Update</span>
+                      </button>
+                      <button onClick={() => handleDeleteProduct(produk.id)} className="flex items-center bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg shadow-sm transition">
+                        <Trash className="w-4 h-4 mr-2" />
+                        <span className="text-sm">Delete</span>
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>

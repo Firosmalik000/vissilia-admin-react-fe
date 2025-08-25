@@ -2,76 +2,63 @@
 
 import { flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable, type ColumnDef, type ColumnFiltersState, type SortingState, type VisibilityState } from '@tanstack/react-table';
 import { ArrowUpDown } from 'lucide-react';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
-
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { DialogKonfirmasi } from './DialogKonfirmasi';
+import api from '@/services/interceptor';
+import { Skeleton } from '@/components/ui/skeleton';
 
-export type Investment = {
+export type User = {
   id: string;
-  date: string;
-  time: string;
-  starCode: string;
-  amount: number;
+  name: string;
+  email: string;
+  phone: string;
 };
 
-// --- Data dummy sesuai dengan struktur Investment Anda ---
-const investmentData: Investment[] = [
-  {
-    id: '234dfseh',
-    date: '08/09/2003',
-    time: '23H,21M,34S',
-    starCode: '1KMps',
-    amount: 50000,
-  },
-  {
-    id: 'abcf1234',
-    date: '10/01/2024',
-    time: '10H,00M,00S',
-    starCode: '2KMps',
-    amount: 150000,
-  },
-  {
-    id: 'xyz7890',
-    date: '05/12/2023',
-    time: '14H,30M,15S',
-    starCode: '3KMps',
-    amount: 250000,
-  },
-];
+interface TableUserProps {
+  mode: 'user' | 'admin';
+  search: string;
+}
 
-const TableUser = () => {
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
-  const [isKonfirmasiDialogOpen, setIsKonfirmasiDialogOpen] = React.useState(false);
-  const [selectedInvestment, setSelectedInvestment] = React.useState<Investment | null>(null);
+const TableUser: React.FC<TableUserProps> = ({ mode, search }) => {
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = useState({});
+  const [loading, setLoading] = useState<boolean>(false);
+  const [globalFilter, setGlobalFilter] = useState('');
+  const [data, setData] = useState<User[]>([]);
+  useEffect(() => {
+    setLoading(true);
 
-  const handleKonfirmasiClick = (investment: Investment) => {
-    setSelectedInvestment(investment);
-    setIsKonfirmasiDialogOpen(true);
-  };
+    const timeout = setTimeout(() => {
+      setGlobalFilter(search);
+      setLoading(false);
+    }, 500);
 
-  const handleConfirmAction = () => {
-    if (selectedInvestment) {
-      console.log('Konfirmasi investasi:', selectedInvestment.id);
+    return () => clearTimeout(timeout);
+  }, [search]);
 
-      alert(`Investasi dengan ID ${selectedInvestment.id} telah dikonfirmasi!`);
+  const fetchUser = async () => {
+    setLoading(true);
+    try {
+      const response = await api.get<{ success: boolean; data: User[] }>('/admin/user', { params: { mode } });
+
+      if (response.data.success) {
+        setData(response.data.data);
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
     }
-    setIsKonfirmasiDialogOpen(false);
-    setSelectedInvestment(null);
   };
 
-  const handleCancelAction = () => {
-    console.log('Konfirmasi dibatalkan.');
-    setIsKonfirmasiDialogOpen(false);
-    setSelectedInvestment(null);
-  };
-
-  const columns: ColumnDef<Investment>[] = [
+  useEffect(() => {
+    fetchUser();
+  }, [mode]);
+  const columns: ColumnDef<User>[] = [
     {
       accessorKey: 'no',
       header: 'No',
@@ -80,125 +67,116 @@ const TableUser = () => {
       enableHiding: false,
     },
     {
-      accessorKey: 'date',
-      header: ({ column }) => {
-        return (
-          <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-            Tanggal
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        );
-      },
-      cell: ({ row }) => (
-        <div>
-          {row.original.date}
-          <br />
-          {row.original.time}
-        </div>
+      accessorKey: 'name',
+      header: ({ column }) => (
+        <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+          Name
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
       ),
+      cell: ({ row }) => <div>{row.getValue('name')}</div>,
     },
     {
-      accessorKey: 'id',
-      header: ({ column }) => {
-        return (
-          <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-            ID Transaksi
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        );
-      },
-      cell: ({ row }) => <div>{row.getValue('id')}</div>,
+      accessorKey: 'email',
+      header: () => <div>Email</div>,
+      cell: ({ row }) => <div>{row.getValue('email')}</div>,
     },
     {
-      accessorKey: 'starCode',
-      header: 'Kode Bintang',
-      cell: ({ row }) => <div>{row.getValue('starCode')}</div>,
-    },
-    {
-      accessorKey: 'amount',
-      header: () => <div className="text-right">Nominal</div>,
-      cell: ({ row }) => {
-        const amount = parseFloat(row.getValue('amount'));
-        const formatted = new Intl.NumberFormat('id-ID', {
-          style: 'currency',
-          currency: 'IDR',
-          minimumFractionDigits: 0,
-          maximumFractionDigits: 0,
-        }).format(amount);
-        return <div className="text-right font-medium">{formatted}</div>;
-      },
+      accessorKey: 'phone',
+      header: () => <div>Phone</div>,
+      cell: ({ row }) => <div>{row.getValue('phone')}</div>,
     },
     {
       id: 'actions',
       enableHiding: false,
       header: 'Aksi',
-      cell: ({ row }) => {
-        const investment = row.original; // Akses data baris saat ini
-
-        return (
-          <div className="flex gap-x-2 text-sm">
-            <Button className="text-red-600 bg-white border border-red-600 hover:underline">Tolak</Button>
-            {/* Tombol Konfirmasi yang memicu dialog */}
-            <Button className="text-blue-600 hover:underline" onClick={() => handleKonfirmasiClick(investment)}>
-              Konfirmasi
-            </Button>
-          </div>
-        );
-      },
+      cell: () => (
+        <div className="flex gap-x-2 text-sm">
+          <Button className="text-red-600 bg-white border border-red-600 hover:bg-red-50">Tolak</Button>
+        </div>
+      ),
     },
   ];
 
   const table = useReactTable({
-    data: investmentData,
+    data,
     columns,
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
     state: {
       sorting,
       columnFilters,
       columnVisibility,
       rowSelection,
+      globalFilter, // aktifkan global filter
     },
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    onColumnVisibilityChange: setColumnVisibility,
+    onRowSelectionChange: setRowSelection,
+    onGlobalFilterChange: setGlobalFilter,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
   });
 
   return (
     <>
       <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return <TableHead key={header.id}>{header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}</TableHead>;
-                })}
+        {loading ? (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                {columns.map((_, i) => (
+                  <TableHead key={i}>
+                    <Skeleton className="h-4 w-20 rounded-md" />
+                  </TableHead>
+                ))}
               </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+            </TableHeader>
+            <TableBody>
+              {Array.from({ length: 5 }).map((_, rowIndex) => (
+                <TableRow key={rowIndex}>
+                  {columns.map((_, cellIndex) => (
+                    <TableCell key={cellIndex}>
+                      <Skeleton className="h-4 w-full rounded-md" />
+                    </TableCell>
                   ))}
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
-                  Tidak ada hasil.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+              ))}
+            </TableBody>
+          </Table>
+        ) : (
+          <Table>
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
+                    <TableHead key={header.id}>{flexRender(header.column.columnDef.header, header.getContext())}</TableHead>
+                  ))}
+                </TableRow>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow key={row.id}>
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={columns.length} className="h-24 text-center">
+                    Tidak ada hasil.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        )}
       </div>
+
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="text-muted-foreground flex-1 text-sm">
           {table.getFilteredSelectedRowModel().rows.length} dari {table.getFilteredRowModel().rows.length} baris terpilih.
@@ -211,21 +189,7 @@ const TableUser = () => {
             Berikutnya
           </Button>
         </div>
-      </div>{' '}
-      {/* Dialog Konfirmasi */}
-      <DialogKonfirmasi
-        isOpen={isKonfirmasiDialogOpen}
-        onOpenChange={setIsKonfirmasiDialogOpen}
-        title="Konfirmasi Investasi"
-        description="Apakah Anda yakin ingin mengkonfirmasi investasi ini?"
-        dataToConfirm={
-          selectedInvestment
-            ? { 'ID Transaksi': selectedInvestment.id, Nominal: new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(selectedInvestment.amount) }
-            : {}
-        }
-        onConfirm={handleConfirmAction}
-        onCancel={handleCancelAction}
-      />
+      </div>
     </>
   );
 };
