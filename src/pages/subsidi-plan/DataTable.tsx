@@ -52,7 +52,7 @@ const DataTable = ({ label }: { label: string }) => {
 
   React.useEffect(() => {
     fetchSubsidi();
-  }, []);
+  }, [open]);
   const handleOpenModal = ({ data }: any) => {
     setOpen(true);
     setPayload(data);
@@ -135,7 +135,7 @@ const DataTable = ({ label }: { label: string }) => {
       <div className="bg-white p-4 rounded-lg shadow-md mt-6">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-semibold">{label}</h3>
-          <Button type="button" className="text-white bg-gradient-to-b from-blue-400 to-blue-600  text-sm p-0 h-auto">
+          <Button type="button" onClick={() => setOpen(true)} className="text-white bg-gradient-to-b from-blue-400 to-blue-600  text-sm p-0 h-auto">
             <Plus className="h-4 w-4" /> Tambah Plan
           </Button>
         </div>
@@ -235,7 +235,7 @@ const DataTable = ({ label }: { label: string }) => {
           </div>
         </div>
       </div>
-      <ModalAddSubsidi isOpen={open} onOpenChange={setOpen} onCancel={() => setOpen(false)} payload={payload} />
+      <ModalAddSubsidi isOpen={open} onOpenChange={setOpen} onCancel={() => setOpen(false)} payload={payload} setPayload={setPayload} />
     </div>
   );
 };
