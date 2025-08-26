@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable, type ColumnDef, type ColumnFiltersState, type SortingState, type VisibilityState } from '@tanstack/react-table';
-import { ArrowUpDown, ChevronDown, Edit2Icon, Plus } from 'lucide-react';
+import { ArrowUpDown, CheckCircle, ChevronDown, Edit2Icon, Plus, Trash } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -12,6 +12,7 @@ import { handleApiError } from '../utils/handleApiError';
 import api from '@/services/interceptor';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ModalAddSubsidi } from './ModalAddSubsidi';
+import toast from 'react-hot-toast';
 
 type SubsidiPlan = {
   id: number;
@@ -58,6 +59,21 @@ const DataTable = ({ label }: { label: string }) => {
     setPayload(data);
   };
 
+  const handleDeleteSubsidi = async ({ id }: { id: number }) => {
+    if (!window.confirm("Apakah Anda yakin ingin menghapus subsidi ini?")) return;
+  
+    try {
+      const response = await api.delete(`/admin/subsidi-plans/${id}`);
+      if (response.data.success) {
+        toast.success(response.data.message);
+        fetchSubsidi();
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Gagal menghapus subsidi");
+    }
+  };
+  
   const subsidiPlanColumns: ColumnDef<SubsidiPlan>[] = [
     {
       accessorKey: 'no',
@@ -103,8 +119,14 @@ const DataTable = ({ label }: { label: string }) => {
       header: 'Aksi',
       cell: ({ row }) => (
         <div className="flex gap-x-2 text-sm">
-          <Button onClick={() => handleOpenModal({ data: row.original })} className="text-white bg-gradient-to-b  from-amber-300 to-amber-500 hover:bg-amber-200">
-            <Edit2Icon className="w-4 h-4" /> Edit
+          <Button title="Realese" onClick={() => handleOpenModal({ data: row.original })} className="text-white bg-gradient-to-b  from-green-300 to-green-500 hover:bg-green-200">
+            <CheckCircle className="w-4 h-4" />
+          </Button>
+          <Button title="Edit" onClick={() => handleOpenModal({ data: row.original })} className="text-white bg-gradient-to-b  from-amber-300 to-amber-500 hover:bg-amber-200">
+            <Edit2Icon className="w-4 h-4" />
+          </Button>
+          <Button title="Hapus" onClick={() => handleDeleteSubsidi({ id: row.original.id })} className="text-white bg-gradient-to-b  from-red-400 to-red-600 hover:bg-red-300">
+            <Trash className="w-4 h-4" />
           </Button>
         </div>
       ),
