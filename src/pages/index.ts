@@ -1,6 +1,7 @@
 export * as Login from './login';
 export * as Dashboard from './chart';
 export * as MainInvest from './invest';
+export * as SubsidiPlan from './subsidi-plan';
 export * as Chart from './approval/chart';
 export * as Invest from './approval/invest';
 export * as Notification from './notification';

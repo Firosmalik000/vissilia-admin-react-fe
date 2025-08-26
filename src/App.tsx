@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
-import { Activity, Chart, Dashboard, EChart, Invest, Login, MainInvest, Marketing, Notification, Produk, ProgramChart, ProgramMarketing, ProgramProduk, User } from './pages';
+import { Activity, Chart, Dashboard, EChart, Invest, Login, MainInvest, Marketing, Notification, Produk, ProgramChart, ProgramMarketing, ProgramProduk, SubsidiPlan, User } from './pages';
 import MainLayout from './fragment/MainLayout';
 import { setNavigator } from './utils/navigate';
 import ProtectedRoute from './route/protectedRoute';
@@ -44,6 +44,7 @@ function AppContent() {
           <Route path="notification" element={<Notification.default />} />
           <Route path="activity" element={<Activity.default />} />
           <Route path="user" element={<User.default />} />
+          <Route path="subsidi-plan" element={<SubsidiPlan.default />} />
         </Route>
       </Route>
     </Routes>
