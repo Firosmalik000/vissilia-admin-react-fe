@@ -3,17 +3,17 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useRef, useState, useEffect } from 'react';
-import { handleApiError } from '../utils/handleApiError';
+import { useRef, useState } from 'react';
 import api from '@/services/interceptor';
 import type { AxiosResponse } from 'axios';
 import toast from 'react-hot-toast';
+import { handleApiError } from '@/pages/utils/handleApiError';
 
-interface ModalAddSubsidiProps {
+interface ModalAddImageProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   onCancel?: () => void;
-  payload?: any; // data plan untuk edit
+  payload?: any;
   setPayload?: any;
 }
 interface FormResponse {
@@ -22,20 +22,10 @@ interface FormResponse {
   status: number;
 }
 
-export function ModalAddSubsidi({ isOpen, onOpenChange, onCancel, payload, setPayload }: ModalAddSubsidiProps) {
+export function ModalAddImage({ isOpen, onOpenChange, onCancel, payload, setPayload }: ModalAddImageProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const formRef = useRef<HTMLFormElement>(null);
-  const [benefits, setBenefits] = useState<string[]>(['']);
-
-  useEffect(() => {
-    if (payload) {
-      setBenefits(payload.benefits || ['']);
-    }
-  }, [payload]);
-
-  const handleAddBenefit = () => setBenefits([...benefits, '']);
-  const handleRemoveBenefit = (index: number) => setBenefits(benefits.filter((_, i) => i !== index));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,7 +33,6 @@ export function ModalAddSubsidi({ isOpen, onOpenChange, onCancel, payload, setPa
     setError('');
     const formData = new FormData(formRef.current!);
     const formObject: Record<string, any> = Object.fromEntries(formData.entries());
-    // formObject.benefits = benefits;
 
     try {
       const response: AxiosResponse<FormResponse> = await api.post(`/admin/subsidi-plans/${payload?.id}`, formObject);
@@ -53,16 +42,15 @@ export function ModalAddSubsidi({ isOpen, onOpenChange, onCancel, payload, setPa
         formRef.current?.reset();
       }
     } catch (err) {
-        handleApiError(err);
+      handleApiError(err);
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
   };
 
   const handleClose = () => {
     onCancel?.();
     formRef.current?.reset();
-    setBenefits(['']);
     setPayload({});
   };
 
@@ -144,24 +132,6 @@ export function ModalAddSubsidi({ isOpen, onOpenChange, onCancel, payload, setPa
             <div>
               <Label>Regulasi</Label>
               <Input type="text" name="regulation" defaultValue={payload?.regulation} placeholder="Masukkan regulasi" />
-            </div>
-
-            {/* Dynamic Benefits */}
-            <div>
-              <Label>Benefit</Label>
-              <div className="space-y-2">
-                {benefits.map((benefit, index) => (
-                  <div key={index} className="flex gap-2">
-                    <Input type="text" name={`benefits[${index}]`} defaultValue={benefit} placeholder={`Benefit ${index + 1}`} />
-                    <Button type="button" variant="destructive" onClick={() => handleRemoveBenefit(index)}>
-                      Hapus
-                    </Button>
-                  </div>
-                ))}
-              </div>
-              <Button type="button" variant="outline" onClick={handleAddBenefit} className="mt-2 w-full">
-                + Tambah Benefit
-              </Button>
             </div>
 
             {error && <p className="text-red-500 text-sm">{error}</p>}

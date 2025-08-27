@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
-import { Activity, Chart, Dashboard, EChart, Invest, Login, MainInvest, Marketing, Notification, Produk, ProgramChart, ProgramMarketing, ProgramProduk, SubsidiPlan, User } from './pages';
+import { Activity, Chart, Dashboard, EChart, Invest, Login, MainInvest, Marketing, Notification, Produk, ProgramChart, ProgramMarketing, ProgramProduk, SubsidiPlan, User, Withdraw } from './pages';
 import MainLayout from './fragment/MainLayout';
 import { setNavigator } from './utils/navigate';
 import ProtectedRoute from './route/protectedRoute';
@@ -31,6 +31,7 @@ function AppContent() {
           <Route path="invest" element={<MainInvest.default />} />
           <Route path="approval/chart" element={<Chart.default />} />
           <Route path="approval/invest" element={<Invest.default />} />
+          <Route path="approval/withdraw" element={<Withdraw.default />} />
           <Route path="e-commerce/chart" element={<EChart.default />} />
           <Route path="e-commerce/produk" element={<Produk.default />} />
           <Route path="e-commerce/orders" element={<OrdersPage />} />

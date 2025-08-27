@@ -4,6 +4,7 @@ export * as MainInvest from './invest';
 export * as SubsidiPlan from './subsidi-plan';
 export * as Chart from './approval/chart';
 export * as Invest from './approval/invest';
+export * as Withdraw from './approval/withdraw';
 export * as Notification from './notification';
 export * as Activity from './activity';
 export * as User from './user';

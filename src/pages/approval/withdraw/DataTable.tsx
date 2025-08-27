@@ -1,32 +1,27 @@
+'use client';
+
 import * as React from 'react';
 import { flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable, type ColumnDef, type ColumnFiltersState, type SortingState, type VisibilityState } from '@tanstack/react-table';
-import { ArrowUpDown, CheckCircle, ChevronDown, Edit2Icon, Plus, TimerResetIcon, Trash } from 'lucide-react';
+import { ArrowUpDown, ChevronDown, Edit2Icon, Trash } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { handleApiError } from '../utils/handleApiError';
 import api from '@/services/interceptor';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ModalAddSubsidi } from './ModalAddSubsidi';
 import toast from 'react-hot-toast';
+import { handleApiError } from '@/pages/utils/handleApiError';
+import { ModalAddImage } from './ModalAddImage';
 
 type SubsidiPlan = {
   id: number;
-  title: string;
-  description: string;
-  original_price: number;
-  discount_percentage: number;
-  final_price: number;
-  period: string;
-  benefits: string; // string JSON
-  regulation: string;
-  reward_per_month: number;
-  best_selling: number;
-  created_at: string;
-  updated_at: string;
-  is_release: number;
+  transaction_id: number;
+  admin_percentage: number;
+  admin_fee: number;
+  pph_percentage: number;
+  pph_fee: number;
+  final_withdraw: number;
 };
 
 const DataTable = ({ label }: { label: string }) => {
@@ -42,7 +37,7 @@ const DataTable = ({ label }: { label: string }) => {
   const fetchSubsidi = async () => {
     setLoading(true);
     try {
-      const response = await api.get('/admin/subsidi-plans');
+      const response = await api.get('/admin/withdraw');
       if (response.data.data) {
         setData(response.data.data.data); // sesuai dengan bentuk respons kamu
         setLoading(false);
@@ -74,7 +69,7 @@ const DataTable = ({ label }: { label: string }) => {
     }
   };
 
-  const handleRealese = async ({ id }: { id: number }) => {
+  const handleReject = async ({ id }: { id: number }) => {
     try {
       const response = await api.post(`/admin/subsidi-plans/${id}/release`);
       if (response.data.success) {
@@ -95,35 +90,56 @@ const DataTable = ({ label }: { label: string }) => {
       enableHiding: false,
     },
     {
-      accessorKey: 'title',
+      accessorKey: 'transaction_id ',
       header: ({ column }) => (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
           Nama Plan <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
-      cell: ({ row }) => <div className="font-semibold">{row.original.title}</div>,
+      cell: ({ row }) => <div className="font-semibold">{row.original.transaction_id}</div>,
     },
 
     {
-      accessorKey: 'discount_percentage',
-      header: 'Diskon',
-      cell: ({ row }) => <div>{row.original.discount_percentage}%</div>,
+      accessorKey: 'admin_percentage',
+      header: 'Admin Percentage',
+      cell: ({ row }) => <div>{row.original.admin_percentage}%</div>,
     },
 
     {
-      accessorKey: 'period',
-      header: 'Periode',
-      cell: ({ row }) => <div>{row.original.period}</div>,
-    },
-    {
-      accessorKey: 'reward_per_month',
-      header: 'Reward/Bulan',
+      accessorKey: 'admin_fee',
+      header: 'Admin Fee',
       cell: ({ row }) =>
         new Intl.NumberFormat('id-ID', {
           style: 'currency',
           currency: 'IDR',
           minimumFractionDigits: 0,
-        }).format(row.original.reward_per_month),
+        }).format(row.original.admin_fee),
+    },
+    {
+      accessorKey: 'pph_percentage',
+      header: 'Diskon',
+      cell: ({ row }) => <div>{row.original.pph_percentage}%</div>,
+    },
+
+    {
+      accessorKey: 'pph_fee',
+      header: 'PPH Fee',
+      cell: ({ row }) =>
+        new Intl.NumberFormat('id-ID', {
+          style: 'currency',
+          currency: 'IDR',
+          minimumFractionDigits: 0,
+        }).format(row.original.pph_fee),
+    },
+    {
+      accessorKey: 'final_withdraw',
+      header: 'Final Withdraw',
+      cell: ({ row }) =>
+        new Intl.NumberFormat('id-ID', {
+          style: 'currency',
+          currency: 'IDR',
+          minimumFractionDigits: 0,
+        }).format(row.original.final_withdraw),
     },
     {
       id: 'actions',
@@ -132,16 +148,6 @@ const DataTable = ({ label }: { label: string }) => {
       cell: ({ row }) => {
         return (
           <div className="flex gap-x-2 text-sm">
-            {row.original?.is_release === 1 ? (
-              <Button title="UnRealese" onClick={() => handleRealese({ id: row.original.id })} className="text-white bg-gradient-to-b  from-red-300 to-red-500 hover:bg-red-200">
-                <TimerResetIcon className="w-4 h-4" />
-              </Button>
-            ) : (
-              <Button title="Realese" onClick={() => handleRealese({ id: row.original.id })} className="text-white bg-gradient-to-b  from-green-300 to-green-500 hover:bg-green-200">
-                <CheckCircle className="w-4 h-4" />
-              </Button>
-            )}
-
             <Button title="Edit" onClick={() => handleOpenModal({ data: row.original })} className="text-white bg-gradient-to-b  from-amber-300 to-amber-500 hover:bg-amber-200">
               <Edit2Icon className="w-4 h-4" />
             </Button>
@@ -178,9 +184,6 @@ const DataTable = ({ label }: { label: string }) => {
       <div className="bg-white p-4 rounded-lg shadow-md mt-6">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-semibold">{label}</h3>
-          <Button type="button" onClick={() => setOpen(true)} className="text-white bg-gradient-to-b from-blue-400 to-blue-600  text-sm p-0 h-auto">
-            <Plus className="h-4 w-4" /> Tambah Plan
-          </Button>
         </div>
         <div className="flex items-center space-x-4 mb-4">
           <Input placeholder="Cari Plan..." value={(table.getColumn('title')?.getFilterValue() as string) ?? ''} onChange={(event) => table.getColumn('title')?.setFilterValue(event.target.value)} className="max-w-sm" />
@@ -278,7 +281,7 @@ const DataTable = ({ label }: { label: string }) => {
           </div>
         </div>
       </div>
-      <ModalAddSubsidi isOpen={open} onOpenChange={setOpen} onCancel={() => setOpen(false)} payload={payload} setPayload={setPayload} />
+      <ModalAddImage isOpen={open} onOpenChange={setOpen} onCancel={() => setOpen(false)} payload={payload} setPayload={setPayload} />
     </div>
   );
 };
