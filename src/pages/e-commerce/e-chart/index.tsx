@@ -48,65 +48,68 @@ const EChart = () => {
               <ChartSection />
 
               {/* Right List Pengajuan Withdraw (Not changed in this iteration) */}
-              <div className="bg-white p-4 rounded-lg shadow-md">
+              <div className="relative bg-white p-4 rounded-lg shadow-md">
                 <h3 className="text-lg font-semibold mb-4">10 Produk Terlaris</h3>
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        No
-                      </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Produk
-                      </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Nama Produk
-                      </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-font-medium text-gray-500 uppercase tracking-wider">
-                        Total Pemasukan
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    <tr>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">1</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        Photo
-                        <br />
-                        PRoduk
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Nama Produk</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-yellow-600">Total Pe</td>
-                    </tr>
-                    <tr>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">2</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        04/09/24
-                        <br />
-                        10H,08M,24S
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Rp50.000</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-green-600">Selesai</td>
-                    </tr>
-                    <tr>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">3</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        01/09/24
-                        <br />
-                        10H,08M,24S
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Rp1.200.000</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-red-600">Dibatalkan</td>
-                    </tr>
-                  </tbody>
-                </table>
+
+                {/* Wrapper agar table bisa scroll horizontal di layar kecil */}
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          No
+                        </th>
+                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Produk
+                        </th>
+                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Nama Produk
+                        </th>
+                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Total Pemasukan
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      <tr>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">1</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          Photo
+                          <br />
+                          Produk
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Nama Produk</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-yellow-600">Total Pe</td>
+                      </tr>
+                      <tr>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">2</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          04/09/24
+                          <br />
+                          10H,08M,24S
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Rp50.000</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-green-600">Selesai</td>
+                      </tr>
+                      <tr>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">3</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          01/09/24
+                          <br />
+                          10H,08M,24S
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Rp1.200.000</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-red-600">Dibatalkan</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
                 <div className="flex justify-end mt-4">
                   <button className="bg-blue-500 hover:bg-blue-600 text-white text-sm py-2 px-4 rounded-md">Rincian</button>
                 </div>
               </div>
             </div>
-
-            {/* Riwayat Withdraw Section (Now using Shadcn UI Table) */}
             <DataTable />
           </div>
         </main>

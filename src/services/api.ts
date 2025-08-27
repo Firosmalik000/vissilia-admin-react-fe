@@ -25,23 +25,22 @@ export const getProduct = async (page: number = 1, perPage: number = 10, categor
     return response.data
 }
 export const postProduct = async (payload: any): Promise<any> => {
-    const formData = new FormData()
-    Object.keys(payload).forEach((key) => {
-        formData.append(key, payload[key])
-    })
+    // const formData = new FormData();
+    // Object.keys(payload).forEach((key) => {
+    //   formData.append(key, payload[key]);
+    // });
 
-    const response = await api.post(`${API_URL}/admin/products`, formData)
+    const response = await api.post(`${API_URL}/admin/products`, payload)
 
     return response.data
 }
+export const updateRealese = async (id: any): Promise<any> => {
+    const response = await api.post(`${API_URL}/admin/products/${id}`)
 
-export const putProduct = async (payload: any): Promise<any> => {
-    const formData = new FormData()
-    Object.keys(payload).forEach((key) => {
-        formData.append(key, payload[key])
-    })
-
-    const response = await api.put(`${API_URL}/admin/products`, formData)
+    return response.data
+}
+export const deleteProduct = async (id: any): Promise<any> => {
+    const response = await api.delete(`${API_URL}/admin/products/${id}`)
 
     return response.data
 }

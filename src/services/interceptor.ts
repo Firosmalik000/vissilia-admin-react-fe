@@ -10,7 +10,7 @@ api.interceptors.request.use(
   (config) => {
     config.headers['ngrok-skip-browser-warning'] = 'true';
 
-    const excludedPaths = ['/auth/login', '/auth/register', '/auth/reset-password'];
+    const excludedPaths = ['/auth/login', '/auth/reset-password'];
 
     if (!excludedPaths.some((path) => config.url?.includes(path))) {
       const token = localStorage.getItem('token');
@@ -29,7 +29,7 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response && (error.response.status === 401 || error.response.data?.message === 'Unauthenticated')) {
+    if (error.response && (error.response.status === 422 || error.response.status === 403 || error.response.data?.message === 'Forbidden')) {
       localStorage.removeItem('token');
 
       window.location.href = '/login';
